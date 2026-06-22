@@ -1,0 +1,1516 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+    <head>
+        <base target="_top" />
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito+Sans:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+            crossorigin
+        ></script>
+        <script
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+            crossorigin
+        ></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <style>
+            :root {
+                --mws-color-brand-primary: #8ba888;
+                --mws-color-brand-primary-strong: #5f7f61;
+                --mws-color-brand-primary-soft: #eef5ed;
+                --mws-color-brand-gold: #d7a84f;
+                --mws-color-text-primary: #223127;
+                --mws-color-text-secondary: #647067;
+                --mws-color-text-muted: #7b857d;
+                --mws-color-surface-page: #f7faf5;
+                --mws-color-surface-card: #ffffff;
+                --mws-color-surface-raised: #fbfdf9;
+                --mws-color-border: #dce7d9;
+                --mws-color-danger: #b94948;
+                --mws-shadow-card: 0 22px 60px rgba(61, 82, 64, 0.14);
+                --mws-shadow-soft: 0 12px 34px rgba(61, 82, 64, 0.1);
+                --mws-radius-lg: 28px;
+                --mws-radius-md: 18px;
+                --mws-radius-sm: 12px;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                min-height: 100vh;
+                color: var(--mws-color-text-primary);
+                background:
+                    radial-gradient(
+                        circle at top left,
+                        rgba(139, 168, 136, 0.24),
+                        transparent 34rem
+                    ),
+                    linear-gradient(
+                        135deg,
+                        #fbf8ef 0%,
+                        var(--mws-color-surface-page) 44%,
+                        #edf5ec 100%
+                    );
+                font-family:
+                    "Nunito Sans",
+                    system-ui,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    sans-serif;
+            }
+
+            button,
+            input,
+            select,
+            textarea {
+                font: inherit;
+            }
+
+            button {
+                cursor: pointer;
+            }
+
+            .app-shell {
+                width: min(1180px, calc(100% - 32px));
+                margin: 0 auto;
+                padding: 32px 0 56px;
+            }
+
+            .hero {
+                display: grid;
+                grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+                gap: 24px;
+                align-items: stretch;
+                margin-bottom: 24px;
+            }
+
+            .hero-card,
+            .panel,
+            .request-card,
+            .empty-state,
+            .modal-card {
+                background: rgba(255, 255, 255, 0.84);
+                border: 1px solid rgba(220, 231, 217, 0.9);
+                border-radius: var(--mws-radius-lg);
+                box-shadow: var(--mws-shadow-card);
+                backdrop-filter: blur(18px);
+            }
+
+            .hero-card {
+                padding: clamp(28px, 5vw, 48px);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .hero-card::after {
+                content: "";
+                position: absolute;
+                width: 220px;
+                height: 220px;
+                right: -76px;
+                bottom: -92px;
+                border-radius: 999px;
+                background: rgba(215, 168, 79, 0.22);
+            }
+
+            .kicker {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 12px;
+                border-radius: 999px;
+                background: var(--mws-color-brand-primary-soft);
+                color: var(--mws-color-brand-primary-strong);
+                font-family: "Plus Jakarta Sans", sans-serif;
+                font-size: 0.78rem;
+                font-weight: 800;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            h1,
+            h2,
+            h3 {
+                margin: 0;
+                font-family: "Plus Jakarta Sans", sans-serif;
+                letter-spacing: -0.035em;
+            }
+
+            h1 {
+                max-width: 780px;
+                margin-top: 18px;
+                font-size: clamp(2.2rem, 5vw, 4.8rem);
+                line-height: 0.98;
+            }
+
+            .hero p {
+                max-width: 720px;
+                color: var(--mws-color-text-secondary);
+                font-size: 1.08rem;
+                line-height: 1.7;
+            }
+
+            .hero-actions,
+            .tabs,
+            .toolbar,
+            .form-actions,
+            .request-meta,
+            .status-line,
+            .pill-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                align-items: center;
+            }
+
+            .stats-card {
+                padding: 24px;
+                display: grid;
+                gap: 16px;
+            }
+
+            .stat-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .stat {
+                padding: 16px;
+                border-radius: var(--mws-radius-md);
+                background: var(--mws-color-surface-raised);
+                border: 1px solid var(--mws-color-border);
+            }
+
+            .stat strong {
+                display: block;
+                font-family: "Plus Jakarta Sans", sans-serif;
+                font-size: 1.8rem;
+            }
+
+            .stat span {
+                color: var(--mws-color-text-secondary);
+                font-size: 0.85rem;
+            }
+
+            .btn {
+                display: inline-flex;
+                min-height: 44px;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                border-radius: 999px;
+                border: 1px solid transparent;
+                padding: 11px 18px;
+                font-family: "Plus Jakarta Sans", sans-serif;
+                font-weight: 800;
+                text-decoration: none;
+                transition:
+                    transform 160ms ease,
+                    box-shadow 160ms ease,
+                    background 160ms ease;
+            }
+
+            .btn:hover:not(:disabled) {
+                transform: translateY(-1px);
+            }
+
+            .btn:disabled {
+                cursor: not-allowed;
+                opacity: 0.65;
+            }
+
+            .btn-primary {
+                color: #fff;
+                background: var(--mws-color-brand-primary-strong);
+                box-shadow: 0 12px 22px rgba(95, 127, 97, 0.28);
+            }
+
+            .btn-outline {
+                color: var(--mws-color-brand-primary-strong);
+                background: rgba(255, 255, 255, 0.72);
+                border-color: var(--mws-color-border);
+            }
+
+            .btn-soft {
+                color: var(--mws-color-brand-primary-strong);
+                background: var(--mws-color-brand-primary-soft);
+            }
+
+            .tabs {
+                margin: 24px 0;
+                padding: 6px;
+                width: fit-content;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.75);
+                border: 1px solid var(--mws-color-border);
+            }
+
+            .tab {
+                border: 0;
+                color: var(--mws-color-text-secondary);
+                background: transparent;
+            }
+
+            .tab.active {
+                color: #fff;
+                background: var(--mws-color-brand-primary-strong);
+            }
+
+            .panel {
+                padding: clamp(20px, 4vw, 34px);
+            }
+
+            .panel-header {
+                display: flex;
+                justify-content: space-between;
+                gap: 16px;
+                align-items: flex-start;
+                margin-bottom: 24px;
+            }
+
+            .panel-header p {
+                margin: 8px 0 0;
+                color: var(--mws-color-text-secondary);
+            }
+
+            .section-title {
+                margin: 28px 0 16px;
+                padding-top: 24px;
+                border-top: 1px solid var(--mws-color-border);
+            }
+
+            .section-title:first-of-type {
+                margin-top: 0;
+                padding-top: 0;
+                border-top: 0;
+            }
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 18px;
+            }
+
+            .field.full {
+                grid-column: 1 / -1;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 8px;
+                color: var(--mws-color-text-primary);
+                font-family: "Plus Jakarta Sans", sans-serif;
+                font-size: 0.9rem;
+                font-weight: 800;
+            }
+
+            .required {
+                color: var(--mws-color-danger);
+            }
+
+            input,
+            select,
+            textarea {
+                width: 100%;
+                border: 1px solid var(--mws-color-border);
+                border-radius: var(--mws-radius-sm);
+                color: var(--mws-color-text-primary);
+                background: rgba(255, 255, 255, 0.92);
+                padding: 13px 14px;
+                outline: none;
+                transition:
+                    border-color 160ms ease,
+                    box-shadow 160ms ease;
+            }
+
+            textarea {
+                min-height: 112px;
+                resize: vertical;
+            }
+
+            input:focus,
+            select:focus,
+            textarea:focus {
+                border-color: var(--mws-color-brand-primary);
+                box-shadow: 0 0 0 4px rgba(139, 168, 136, 0.18);
+            }
+
+            .helper {
+                margin-top: 6px;
+                color: var(--mws-color-text-muted);
+                font-size: 0.86rem;
+            }
+
+            .alert {
+                margin-bottom: 18px;
+                padding: 14px 16px;
+                border-radius: var(--mws-radius-sm);
+                border: 1px solid var(--mws-color-border);
+                background: var(--mws-color-brand-primary-soft);
+                color: var(--mws-color-brand-primary-strong);
+                font-weight: 700;
+            }
+
+            .alert.error {
+                color: #8f3433;
+                background: #fff1f1;
+                border-color: #f3c7c7;
+            }
+
+            .toolbar {
+                justify-content: space-between;
+                margin-bottom: 20px;
+            }
+
+            .toolbar-controls {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .toolbar input,
+            .toolbar select {
+                width: auto;
+                min-width: 210px;
+            }
+
+            .requests-grid {
+                display: grid;
+                gap: 16px;
+            }
+
+            .request-card {
+                padding: 20px;
+            }
+
+            .request-card-header {
+                display: flex;
+                justify-content: space-between;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .request-card h3 {
+                font-size: 1.2rem;
+            }
+
+            .request-card p {
+                color: var(--mws-color-text-secondary);
+                line-height: 1.55;
+            }
+
+            .request-meta {
+                margin: 10px 0;
+                color: var(--mws-color-text-muted);
+                font-size: 0.9rem;
+            }
+
+            .pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                width: fit-content;
+                border-radius: 999px;
+                padding: 6px 10px;
+                color: var(--mws-color-brand-primary-strong);
+                background: var(--mws-color-brand-primary-soft);
+                font-size: 0.82rem;
+                font-weight: 800;
+            }
+
+            .pill.gold {
+                color: #7b5720;
+                background: #fff5dc;
+            }
+
+            .pill.red {
+                color: #8f3433;
+                background: #fff1f1;
+            }
+
+            .progress {
+                display: grid;
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+                gap: 8px;
+                margin-top: 16px;
+            }
+
+            .progress-step {
+                min-height: 10px;
+                border-radius: 999px;
+                background: #e3eadf;
+            }
+
+            .progress-step.done {
+                background: var(--mws-color-brand-primary-strong);
+            }
+
+            .progress-step.warning {
+                background: var(--mws-color-brand-gold);
+            }
+
+            .progress-step.rejected {
+                background: var(--mws-color-danger);
+            }
+
+            .empty-state {
+                padding: 36px;
+                text-align: center;
+            }
+
+            .modal-backdrop {
+                position: fixed;
+                inset: 0;
+                z-index: 40;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                background: rgba(34, 49, 39, 0.42);
+            }
+
+            .modal-card {
+                width: min(860px, 100%);
+                max-height: min(86vh, 900px);
+                overflow: auto;
+                padding: 28px;
+            }
+
+            .detail-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 14px;
+                margin-top: 20px;
+            }
+
+            .detail-item {
+                padding: 14px;
+                border: 1px solid var(--mws-color-border);
+                border-radius: var(--mws-radius-sm);
+                background: var(--mws-color-surface-raised);
+            }
+
+            .detail-item.full {
+                grid-column: 1 / -1;
+            }
+
+            .detail-label {
+                color: var(--mws-color-text-muted);
+                font-size: 0.78rem;
+                font-weight: 800;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+
+            .detail-value {
+                margin-top: 6px;
+                white-space: pre-wrap;
+            }
+
+            .loading {
+                padding: 32px;
+                color: var(--mws-color-text-secondary);
+                text-align: center;
+            }
+
+            @media (max-width: 820px) {
+                .hero,
+                .form-grid,
+                .detail-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .field.full,
+                .detail-item.full {
+                    grid-column: auto;
+                }
+
+                .panel-header,
+                .request-card-header,
+                .toolbar {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .toolbar input,
+                .toolbar select,
+                .btn {
+                    width: 100%;
+                }
+
+                .tabs {
+                    width: 100%;
+                }
+
+                .tab {
+                    flex: 1;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root"></div>
+
+        <script type="text/babel">
+            const { useEffect, useMemo, useState } = React;
+
+            const initialForm = {
+                requestTitle: "",
+                department: "",
+                requesterName: "",
+                dateOfRequest: new Date().toISOString().slice(0, 10),
+                problemStatement: "",
+                impact: "",
+                dataSources: "",
+                hasSolution: "No",
+                proposedSolution: "",
+                reference: "",
+                feature1: "",
+                feature2: "",
+                feature3: "",
+                users: "",
+                successCriteria: "",
+                priority: "Medium",
+                deadline: "",
+                additionalNotes: "",
+            };
+
+            const progressOrder = [
+                "Submitted",
+                "Reviewing",
+                "Approved",
+                "In Progress",
+                "Completed",
+            ];
+            const terminalStatuses = ["Backlog", "Rejected"];
+
+            function runServer(functionName, ...args) {
+                return new Promise((resolve, reject) => {
+                    google.script.run
+                        .withSuccessHandler(resolve)
+                        .withFailureHandler(reject)
+                        [functionName](...args);
+                });
+            }
+
+            function App() {
+                const [activeTab, setActiveTab] = useState("submit");
+                const [requests, setRequests] = useState([]);
+                const [loading, setLoading] = useState(true);
+                const [submitting, setSubmitting] = useState(false);
+                const [form, setForm] = useState(initialForm);
+                const [message, setMessage] = useState(null);
+                const [query, setQuery] = useState("");
+                const [statusFilter, setStatusFilter] = useState("All");
+                const [priorityFilter, setPriorityFilter] = useState("All");
+                const [selectedRequest, setSelectedRequest] = useState(null);
+
+                useEffect(() => {
+                    loadRequests();
+                }, []);
+
+                async function loadRequests() {
+                    setLoading(true);
+                    try {
+                        const response = await runServer("getRequests");
+                        setRequests(response.requests || []);
+                    } catch (error) {
+                        setMessage({
+                            type: "error",
+                            text: error.message || "Could not load requests.",
+                        });
+                    } finally {
+                        setLoading(false);
+                    }
+                }
+
+                function updateField(name, value) {
+                    setForm((current) => ({ ...current, [name]: value }));
+                }
+
+                async function handleSubmit(event) {
+                    event.preventDefault();
+                    setSubmitting(true);
+                    setMessage(null);
+
+                    try {
+                        const response = await runServer("submitRequest", form);
+                        setMessage({
+                            type: "success",
+                            text: `Request submitted successfully. Tracking ID: ${response.requestId}`,
+                        });
+                        setForm({
+                            ...initialForm,
+                            dateOfRequest: new Date()
+                                .toISOString()
+                                .slice(0, 10),
+                        });
+                        await loadRequests();
+                        setActiveTab("track");
+                    } catch (error) {
+                        setMessage({
+                            type: "error",
+                            text: error.message || "Submission failed.",
+                        });
+                    } finally {
+                        setSubmitting(false);
+                    }
+                }
+
+                const filteredRequests = useMemo(() => {
+                    const normalizedQuery = query.trim().toLowerCase();
+                    return requests.filter((request) => {
+                        const matchesQuery =
+                            !normalizedQuery ||
+                            [
+                                request.id,
+                                request.requestTitle,
+                                request.department,
+                                request.requesterName,
+                                request.problemStatement,
+                                request.users,
+                            ]
+                                .join(" ")
+                                .toLowerCase()
+                                .includes(normalizedQuery);
+
+                        const matchesStatus =
+                            statusFilter === "All" ||
+                            request.status === statusFilter;
+                        const matchesPriority =
+                            priorityFilter === "All" ||
+                            request.priority === priorityFilter;
+                        return matchesQuery && matchesStatus && matchesPriority;
+                    });
+                }, [requests, query, statusFilter, priorityFilter]);
+
+                const stats = useMemo(() => {
+                    return {
+                        total: requests.length,
+                        reviewing: requests.filter((request) =>
+                            ["Submitted", "Reviewing"].includes(request.status),
+                        ).length,
+                        active: requests.filter((request) =>
+                            ["Approved", "In Progress"].includes(
+                                request.status,
+                            ),
+                        ).length,
+                        completed: requests.filter(
+                            (request) => request.status === "Completed",
+                        ).length,
+                    };
+                }, [requests]);
+
+                return (
+                    <main className="app-shell">
+                        <section className="hero" aria-labelledby="page-title">
+                            <div className="hero-card">
+                                <span className="kicker">
+                                    MAD Labs · Heart & Purpose
+                                </span>
+                                <h1 id="page-title">
+                                    Solutions request and progress tracker
+                                </h1>
+                                <p>
+                                    Share an idea, problem, or process
+                                    improvement with MAD Labs. Once submitted,
+                                    the request appears in the public tracker so
+                                    everyone can follow progress clearly.
+                                </p>
+                                <div className="hero-actions">
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={() => setActiveTab("submit")}
+                                    >
+                                        Submit new request
+                                    </button>
+                                    <button
+                                        className="btn btn-outline"
+                                        onClick={() => setActiveTab("track")}
+                                    >
+                                        View progress tracker
+                                    </button>
+                                </div>
+                            </div>
+
+                            <aside
+                                className="hero-card stats-card"
+                                aria-label="Request summary"
+                            >
+                                <span className="kicker">Live Overview</span>
+                                <div className="stat-grid">
+                                    <Stat
+                                        label="Total requests"
+                                        value={stats.total}
+                                    />
+                                    <Stat
+                                        label="Under review"
+                                        value={stats.reviewing}
+                                    />
+                                    <Stat
+                                        label="Active builds"
+                                        value={stats.active}
+                                    />
+                                    <Stat
+                                        label="Completed"
+                                        value={stats.completed}
+                                    />
+                                </div>
+                            </aside>
+                        </section>
+
+                        <nav className="tabs" aria-label="Main sections">
+                            <button
+                                className={`btn tab ${activeTab === "submit" ? "active" : ""}`}
+                                onClick={() => setActiveTab("submit")}
+                            >
+                                Request Form
+                            </button>
+                            <button
+                                className={`btn tab ${activeTab === "track" ? "active" : ""}`}
+                                onClick={() => setActiveTab("track")}
+                            >
+                                Progress Tracker
+                            </button>
+                        </nav>
+
+                        {message && (
+                            <div
+                                className={`alert ${message.type === "error" ? "error" : ""}`}
+                                role="status"
+                            >
+                                {message.text}
+                            </div>
+                        )}
+
+                        {activeTab === "submit" ? (
+                            <RequestForm
+                                form={form}
+                                updateField={updateField}
+                                onSubmit={handleSubmit}
+                                submitting={submitting}
+                            />
+                        ) : (
+                            <Tracker
+                                loading={loading}
+                                requests={filteredRequests}
+                                allRequests={requests}
+                                query={query}
+                                setQuery={setQuery}
+                                statusFilter={statusFilter}
+                                setStatusFilter={setStatusFilter}
+                                priorityFilter={priorityFilter}
+                                setPriorityFilter={setPriorityFilter}
+                                onRefresh={loadRequests}
+                                onSelect={setSelectedRequest}
+                            />
+                        )}
+
+                        {selectedRequest && (
+                            <RequestModal
+                                request={selectedRequest}
+                                onClose={() => setSelectedRequest(null)}
+                            />
+                        )}
+                    </main>
+                );
+            }
+
+            function Stat({ label, value }) {
+                return (
+                    <div className="stat">
+                        <strong>{value}</strong>
+                        <span>{label}</span>
+                    </div>
+                );
+            }
+
+            function RequestForm({ form, updateField, onSubmit, submitting }) {
+                return (
+                    <section className="panel" aria-labelledby="form-title">
+                        <div className="panel-header">
+                            <div>
+                                <h2 id="form-title">
+                                    MAD Labs Solution Development Form
+                                </h2>
+                                <p>
+                                    Include as much detail as possible so the
+                                    team can understand the need and recommend
+                                    the right solution.
+                                </p>
+                            </div>
+                        </div>
+
+                        <form onSubmit={onSubmit}>
+                            <FormSection title="1. Request Overview">
+                                <Input
+                                    label="Request Title"
+                                    name="requestTitle"
+                                    value={form.requestTitle}
+                                    onChange={updateField}
+                                    required
+                                />
+                                <Input
+                                    label="Department"
+                                    name="department"
+                                    value={form.department}
+                                    onChange={updateField}
+                                    required
+                                />
+                                <Input
+                                    label="Requester Name"
+                                    name="requesterName"
+                                    value={form.requesterName}
+                                    onChange={updateField}
+                                    required
+                                />
+                                <Input
+                                    label="Date of Request"
+                                    name="dateOfRequest"
+                                    type="date"
+                                    value={form.dateOfRequest}
+                                    onChange={updateField}
+                                    required
+                                />
+                            </FormSection>
+
+                            <FormSection title="2. Problem Statement">
+                                <Textarea
+                                    className="full"
+                                    label="What problem are you facing?"
+                                    helper="Describe the current situation clearly. What is not working? What is inefficient?"
+                                    name="problemStatement"
+                                    value={form.problemStatement}
+                                    onChange={updateField}
+                                    required
+                                />
+                                <Textarea
+                                    className="full"
+                                    label="Why does this matter?"
+                                    helper="Explain the impact: time wasted, errors, confusion, delays, or other effects."
+                                    name="impact"
+                                    value={form.impact}
+                                    onChange={updateField}
+                                    required
+                                />
+                                <Textarea
+                                    className="full"
+                                    label="What data do you currently have?"
+                                    helper="Docs, Sheets, forms, apps, systems, or any other data sources."
+                                    name="dataSources"
+                                    value={form.dataSources}
+                                    onChange={updateField}
+                                />
+                            </FormSection>
+
+                            <FormSection title="3. Proposed Idea">
+                                <Select
+                                    label="Do you already have a solution in mind?"
+                                    name="hasSolution"
+                                    value={form.hasSolution}
+                                    onChange={updateField}
+                                    options={["No", "Yes"]}
+                                />
+                                <Textarea
+                                    label="If yes, describe briefly"
+                                    helper="Example: dashboard, automation, mobile app, AI tool."
+                                    name="proposedSolution"
+                                    value={form.proposedSolution}
+                                    onChange={updateField}
+                                />
+                                <Textarea
+                                    className="full"
+                                    label="Reference / Example"
+                                    helper="Links, screenshots, tools, or products you have seen."
+                                    name="reference"
+                                    value={form.reference}
+                                    onChange={updateField}
+                                />
+                            </FormSection>
+
+                            <FormSection title="4. Requirements">
+                                <Input
+                                    label="Key Feature 1"
+                                    name="feature1"
+                                    value={form.feature1}
+                                    onChange={updateField}
+                                />
+                                <Input
+                                    label="Key Feature 2"
+                                    name="feature2"
+                                    value={form.feature2}
+                                    onChange={updateField}
+                                />
+                                <Input
+                                    label="Key Feature 3"
+                                    name="feature3"
+                                    value={form.feature3}
+                                    onChange={updateField}
+                                />
+                                <Input
+                                    label="Who will use this?"
+                                    helper="Example: Teachers, Students, Staff, Parents."
+                                    name="users"
+                                    value={form.users}
+                                    onChange={updateField}
+                                    required
+                                />
+                                <Textarea
+                                    className="full"
+                                    label="What does success look like?"
+                                    helper="Be specific: faster process, fewer errors, automation, better reporting, etc."
+                                    name="successCriteria"
+                                    value={form.successCriteria}
+                                    onChange={updateField}
+                                    required
+                                />
+                            </FormSection>
+
+                            <FormSection title="5. Priority and Timeline">
+                                <Select
+                                    label="Priority Level"
+                                    name="priority"
+                                    value={form.priority}
+                                    onChange={updateField}
+                                    options={["Low", "Medium", "High"]}
+                                    required
+                                />
+                                <Input
+                                    label="Deadline (if any)"
+                                    name="deadline"
+                                    type="date"
+                                    value={form.deadline}
+                                    onChange={updateField}
+                                />
+                                <Textarea
+                                    className="full"
+                                    label="Additional Notes"
+                                    helper="Anything else MAD Labs should know: constraints, expectations, context."
+                                    name="additionalNotes"
+                                    value={form.additionalNotes}
+                                    onChange={updateField}
+                                />
+                            </FormSection>
+
+                            <div className="form-actions">
+                                <button
+                                    className="btn btn-primary"
+                                    type="submit"
+                                    disabled={submitting}
+                                >
+                                    {submitting
+                                        ? "Submitting…"
+                                        : "Submit request"}
+                                </button>
+                                <span className="helper">
+                                    After submission, your request will be
+                                    visible in the progress tracker.
+                                </span>
+                            </div>
+                        </form>
+                    </section>
+                );
+            }
+
+            function FormSection({ title, children }) {
+                return (
+                    <>
+                        <h3 className="section-title">{title}</h3>
+                        <div className="form-grid">{children}</div>
+                    </>
+                );
+            }
+
+            function Input({
+                label,
+                helper,
+                name,
+                value,
+                onChange,
+                required,
+                type = "text",
+                className = "",
+            }) {
+                return (
+                    <div className={`field ${className}`}>
+                        <label htmlFor={name}>
+                            {label}{" "}
+                            {required && <span className="required">*</span>}
+                        </label>
+                        <input
+                            id={name}
+                            name={name}
+                            type={type}
+                            value={value}
+                            required={required}
+                            onChange={(event) =>
+                                onChange(name, event.target.value)
+                            }
+                        />
+                        {helper && <div className="helper">{helper}</div>}
+                    </div>
+                );
+            }
+
+            function Textarea({
+                label,
+                helper,
+                name,
+                value,
+                onChange,
+                required,
+                className = "",
+            }) {
+                return (
+                    <div className={`field ${className}`}>
+                        <label htmlFor={name}>
+                            {label}{" "}
+                            {required && <span className="required">*</span>}
+                        </label>
+                        <textarea
+                            id={name}
+                            name={name}
+                            value={value}
+                            required={required}
+                            onChange={(event) =>
+                                onChange(name, event.target.value)
+                            }
+                        />
+                        {helper && <div className="helper">{helper}</div>}
+                    </div>
+                );
+            }
+
+            function Select({
+                label,
+                helper,
+                name,
+                value,
+                onChange,
+                options,
+                required,
+            }) {
+                return (
+                    <div className="field">
+                        <label htmlFor={name}>
+                            {label}{" "}
+                            {required && <span className="required">*</span>}
+                        </label>
+                        <select
+                            id={name}
+                            name={name}
+                            value={value}
+                            required={required}
+                            onChange={(event) =>
+                                onChange(name, event.target.value)
+                            }
+                        >
+                            {options.map((option) => (
+                                <option key={option} value={option}>
+                                    {option}
+                                </option>
+                            ))}
+                        </select>
+                        {helper && <div className="helper">{helper}</div>}
+                    </div>
+                );
+            }
+
+            function Tracker({
+                loading,
+                requests,
+                allRequests,
+                query,
+                setQuery,
+                statusFilter,
+                setStatusFilter,
+                priorityFilter,
+                setPriorityFilter,
+                onRefresh,
+                onSelect,
+            }) {
+                const statuses = [
+                    "All",
+                    "Submitted",
+                    "Reviewing",
+                    "Approved",
+                    "In Progress",
+                    "Completed",
+                    "Backlog",
+                    "Rejected",
+                ];
+                const priorities = ["All", "Low", "Medium", "High"];
+
+                return (
+                    <section className="panel" aria-labelledby="tracker-title">
+                        <div className="panel-header">
+                            <div>
+                                <h2 id="tracker-title">
+                                    Public progress tracker
+                                </h2>
+                                <p>
+                                    Everyone with access to this web app can
+                                    view submitted requests and current MAD Labs
+                                    progress.
+                                </p>
+                            </div>
+                            <button
+                                className="btn btn-outline"
+                                onClick={onRefresh}
+                            >
+                                Refresh
+                            </button>
+                        </div>
+
+                        <div className="toolbar">
+                            <div className="toolbar-controls">
+                                <input
+                                    aria-label="Search requests"
+                                    placeholder="Search by ID, title, requester…"
+                                    value={query}
+                                    onChange={(event) =>
+                                        setQuery(event.target.value)
+                                    }
+                                />
+                                <select
+                                    aria-label="Filter by status"
+                                    value={statusFilter}
+                                    onChange={(event) =>
+                                        setStatusFilter(event.target.value)
+                                    }
+                                >
+                                    {statuses.map((status) => (
+                                        <option key={status}>{status}</option>
+                                    ))}
+                                </select>
+                                <select
+                                    aria-label="Filter by priority"
+                                    value={priorityFilter}
+                                    onChange={(event) =>
+                                        setPriorityFilter(event.target.value)
+                                    }
+                                >
+                                    {priorities.map((priority) => (
+                                        <option key={priority}>
+                                            {priority}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <span className="helper">
+                                Showing {requests.length} of{" "}
+                                {allRequests.length} requests
+                            </span>
+                        </div>
+
+                        {loading ? (
+                            <div className="loading">Loading requests…</div>
+                        ) : requests.length === 0 ? (
+                            <div className="empty-state">
+                                <h3>No requests found</h3>
+                                <p>
+                                    Try adjusting the filters or submit the
+                                    first solution request.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="requests-grid">
+                                {requests.map((request) => (
+                                    <RequestCard
+                                        key={request.id}
+                                        request={request}
+                                        onSelect={onSelect}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </section>
+                );
+            }
+
+            function RequestCard({ request, onSelect }) {
+                return (
+                    <article className="request-card">
+                        <div className="request-card-header">
+                            <div>
+                                <div className="pill-row">
+                                    <span className="pill">{request.id}</span>
+                                    <StatusPill status={request.status} />
+                                    <PriorityPill priority={request.priority} />
+                                </div>
+                                <h3>{request.requestTitle}</h3>
+                                <div className="request-meta">
+                                    <span>{request.department}</span>
+                                    <span>·</span>
+                                    <span>
+                                        Requested by {request.requesterName}
+                                    </span>
+                                    <span>·</span>
+                                    <span>{request.dateOfRequest}</span>
+                                </div>
+                            </div>
+                            <button
+                                className="btn btn-soft"
+                                onClick={() => onSelect(request)}
+                            >
+                                View details
+                            </button>
+                        </div>
+                        <p>{truncate(request.problemStatement, 220)}</p>
+                        <div className="status-line">
+                            <strong>Progress:</strong>
+                            <span>{getProgressLabel(request.status)}</span>
+                            {request.lastUpdated && (
+                                <span className="helper">
+                                    Last updated {request.lastUpdated}
+                                </span>
+                            )}
+                        </div>
+                        <ProgressBar status={request.status} />
+                    </article>
+                );
+            }
+
+            function StatusPill({ status }) {
+                const isRejected = status === "Rejected";
+                const isTerminal = terminalStatuses.includes(status);
+                return (
+                    <span
+                        className={`pill ${isRejected ? "red" : isTerminal ? "gold" : ""}`}
+                    >
+                        {status || "Submitted"}
+                    </span>
+                );
+            }
+
+            function PriorityPill({ priority }) {
+                return (
+                    <span
+                        className={`pill ${priority === "High" ? "gold" : ""}`}
+                    >
+                        {priority || "Medium"} Priority
+                    </span>
+                );
+            }
+
+            function ProgressBar({ status }) {
+                const safeStatus = status || "Submitted";
+                const activeIndex = progressOrder.indexOf(safeStatus);
+                const isBacklog = safeStatus === "Backlog";
+                const isRejected = safeStatus === "Rejected";
+                const filled =
+                    activeIndex >= 0
+                        ? activeIndex + 1
+                        : isBacklog || isRejected
+                          ? 2
+                          : 1;
+
+                return (
+                    <div
+                        className="progress"
+                        aria-label={`Progress status: ${safeStatus}`}
+                    >
+                        {progressOrder.map((step, index) => (
+                            <div
+                                key={step}
+                                title={step}
+                                className={`progress-step ${index < filled ? "done" : ""} ${isBacklog && index < filled ? "warning" : ""} ${isRejected && index < filled ? "rejected" : ""}`}
+                            />
+                        ))}
+                    </div>
+                );
+            }
+
+            function RequestModal({ request, onClose }) {
+                useEffect(() => {
+                    function handleKeyDown(event) {
+                        if (event.key === "Escape") onClose();
+                    }
+                    window.addEventListener("keydown", handleKeyDown);
+                    return () =>
+                        window.removeEventListener("keydown", handleKeyDown);
+                }, [onClose]);
+
+                return (
+                    <div
+                        className="modal-backdrop"
+                        role="presentation"
+                        onMouseDown={(event) =>
+                            event.target === event.currentTarget && onClose()
+                        }
+                    >
+                        <section
+                            className="modal-card"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="modal-title"
+                        >
+                            <div className="panel-header">
+                                <div>
+                                    <span className="kicker">{request.id}</span>
+                                    <h2 id="modal-title">
+                                        {request.requestTitle}
+                                    </h2>
+                                    <div className="request-meta">
+                                        <span>{request.department}</span>
+                                        <span>·</span>
+                                        <span>{request.requesterName}</span>
+                                        <span>·</span>
+                                        <span>{request.dateOfRequest}</span>
+                                    </div>
+                                </div>
+                                <button
+                                    className="btn btn-outline"
+                                    onClick={onClose}
+                                >
+                                    Close
+                                </button>
+                            </div>
+
+                            <div className="pill-row">
+                                <StatusPill status={request.status} />
+                                <PriorityPill priority={request.priority} />
+                                {request.deadline && (
+                                    <span className="pill gold">
+                                        Deadline {request.deadline}
+                                    </span>
+                                )}
+                            </div>
+                            <ProgressBar status={request.status} />
+
+                            <div className="detail-grid">
+                                <Detail
+                                    label="Problem"
+                                    value={request.problemStatement}
+                                    full
+                                />
+                                <Detail
+                                    label="Why it matters"
+                                    value={request.impact}
+                                    full
+                                />
+                                <Detail
+                                    label="Current data"
+                                    value={
+                                        request.dataSources || "Not provided"
+                                    }
+                                    full
+                                />
+                                <Detail
+                                    label="Solution in mind"
+                                    value={request.hasSolution || "No"}
+                                />
+                                <Detail
+                                    label="Proposed idea"
+                                    value={
+                                        request.proposedSolution ||
+                                        "Not provided"
+                                    }
+                                />
+                                <Detail
+                                    label="Reference / Example"
+                                    value={request.reference || "Not provided"}
+                                    full
+                                />
+                                <Detail
+                                    label="Key features"
+                                    value={
+                                        request.features.length
+                                            ? request.features
+                                                  .map(
+                                                      (feature, index) =>
+                                                          `${index + 1}. ${feature}`,
+                                                  )
+                                                  .join("\n")
+                                            : "Not provided"
+                                    }
+                                    full
+                                />
+                                <Detail label="Users" value={request.users} />
+                                <Detail
+                                    label="Success criteria"
+                                    value={request.successCriteria}
+                                />
+                                <Detail
+                                    label="Additional notes"
+                                    value={
+                                        request.additionalNotes ||
+                                        "Not provided"
+                                    }
+                                    full
+                                />
+                                <Detail
+                                    label="Reviewed by"
+                                    value={request.reviewedBy || "Pending"}
+                                />
+                                <Detail
+                                    label="Feasibility"
+                                    value={request.feasibility || "Pending"}
+                                />
+                                <Detail
+                                    label="Impact level"
+                                    value={request.impactLevel || "Pending"}
+                                />
+                                <Detail
+                                    label="Decision"
+                                    value={request.decision || "Pending"}
+                                />
+                                <Detail
+                                    label="MAD Labs notes"
+                                    value={
+                                        request.madLabsNotes || "No notes yet"
+                                    }
+                                    full
+                                />
+                            </div>
+                        </section>
+                    </div>
+                );
+            }
+
+            function Detail({ label, value, full }) {
+                return (
+                    <div className={`detail-item ${full ? "full" : ""}`}>
+                        <div className="detail-label">{label}</div>
+                        <div className="detail-value">{value}</div>
+                    </div>
+                );
+            }
+
+            function truncate(value, length) {
+                if (!value || value.length <= length) return value || "";
+                return `${value.slice(0, length).trim()}…`;
+            }
+
+            function getProgressLabel(status) {
+                if (status === "Backlog")
+                    return "Accepted into backlog for future planning.";
+                if (status === "Rejected")
+                    return "Reviewed and not approved at this time.";
+                if (status === "Completed") return "Solution completed.";
+                if (status === "In Progress")
+                    return "MAD Labs is actively building or implementing.";
+                if (status === "Approved")
+                    return "Approved and ready for development planning.";
+                if (status === "Reviewing")
+                    return "MAD Labs is reviewing feasibility and impact.";
+                return "Submitted and waiting for MAD Labs review.";
+            }
+
+            ReactDOM.createRoot(document.getElementById("root")).render(
+                <App />,
+            );
+        </script>
+    </body>
+</html>
