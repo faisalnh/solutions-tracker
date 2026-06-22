@@ -35,12 +35,11 @@ const DEFAULT_STATUS = "Submitted";
 const VALID_PRIORITIES = ["Low", "Medium", "High"];
 const VALID_STATUSES = [
   "Submitted",
-  "Reviewing",
   "Approved",
-  "In Progress",
-  "Completed",
-  "Backlog",
   "Rejected",
+  "MVP",
+  "Done",
+  "Backlog",
 ];
 const VALID_ASSESSMENTS = {
   feasibility: ["Easy", "Medium", "Complex"],
