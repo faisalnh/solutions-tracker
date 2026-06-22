@@ -204,7 +204,7 @@ function validateRequest_(data) {
 }
 
 function getSheet_() {
-  const spreadsheet = SpreadsheetApp.openById(getSpreadsheetId_());
+  const spreadsheet = getSpreadsheet_();
   let sheet = spreadsheet.getSheetByName(SHEET_NAME);
 
   if (!sheet) {
@@ -215,7 +215,26 @@ function getSheet_() {
   return sheet;
 }
 
+function getSpreadsheet_() {
+  const boundSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+
+  if (boundSpreadsheet) {
+    ensureEditTrigger_(boundSpreadsheet.getId());
+    return boundSpreadsheet;
+  }
+
+  const spreadsheetId = getSpreadsheetId_();
+  return SpreadsheetApp.openById(spreadsheetId);
+}
+
 function getSpreadsheetId_() {
+  const boundSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+
+  if (boundSpreadsheet) {
+    ensureEditTrigger_(boundSpreadsheet.getId());
+    return boundSpreadsheet.getId();
+  }
+
   const properties = PropertiesService.getScriptProperties();
   let spreadsheetId = properties.getProperty("REQUESTS_SPREADSHEET_ID");
 
