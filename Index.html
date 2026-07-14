@@ -1,1912 +1,906 @@
 <!doctype html>
 <html lang="en" data-theme="light">
-    <head>
-        <base target="_top" />
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito+Sans:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
-            rel="stylesheet"
-        />
-        <script
-            src="https://unpkg.com/react@18/umd/react.production.min.js"
-            crossorigin
-        ></script>
-        <script
-            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
-            crossorigin
-        ></script>
-        <style>
-            :root {
-                --mws-color-brand-primary: #8ba888;
-                --mws-color-brand-primary-strong: #5f7f61;
-                --mws-color-brand-primary-soft: #eef5ed;
-                --mws-color-brand-gold: #d7a84f;
-                --mws-color-text-primary: #223127;
-                --mws-color-text-secondary: #647067;
-                --mws-color-text-muted: #7b857d;
-                --mws-color-surface-page: #f7faf5;
-                --mws-color-surface-card: #ffffff;
-                --mws-color-surface-raised: #fbfdf9;
-                --mws-color-border: #dce7d9;
-                --mws-color-danger: #b94948;
-                --mws-shadow-card: 0 22px 60px rgba(61, 82, 64, 0.14);
-                --mws-shadow-soft: 0 12px 34px rgba(61, 82, 64, 0.1);
-                --mws-radius-lg: 28px;
-                --mws-radius-md: 18px;
-                --mws-radius-sm: 12px;
-            }
-
-            * {
-                box-sizing: border-box;
-            }
-
-            body {
-                margin: 0;
-                min-height: 100vh;
-                color: var(--mws-color-text-primary);
-                background:
-                    radial-gradient(
-                        circle at top left,
-                        rgba(139, 168, 136, 0.24),
-                        transparent 34rem
-                    ),
-                    linear-gradient(
-                        135deg,
-                        #fbf8ef 0%,
-                        var(--mws-color-surface-page) 44%,
-                        #edf5ec 100%
-                    );
-                font-family:
-                    "Nunito Sans",
-                    system-ui,
-                    -apple-system,
-                    BlinkMacSystemFont,
-                    "Segoe UI",
-                    sans-serif;
-            }
-
-            button,
-            input,
-            select,
-            textarea {
-                font: inherit;
-            }
-
-            button {
-                cursor: pointer;
-            }
-
-            .app-shell {
-                width: min(1180px, calc(100% - 32px));
-                margin: 0 auto;
-                padding: 32px 0 56px;
-            }
-
-            .hero {
-                display: grid;
-                grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
-                gap: 24px;
-                align-items: stretch;
-                margin-bottom: 24px;
-            }
-
-            .hero-card,
-            .panel,
-            .request-card,
-            .empty-state,
-            .modal-card {
-                background: rgba(255, 255, 255, 0.84);
-                border: 1px solid rgba(220, 231, 217, 0.9);
-                border-radius: var(--mws-radius-lg);
-                box-shadow: var(--mws-shadow-card);
-                backdrop-filter: blur(18px);
-            }
-
-            .hero-card {
-                padding: clamp(28px, 5vw, 48px);
-                position: relative;
-                overflow: hidden;
-            }
-
-            .hero-card::after {
-                content: "";
-                position: absolute;
-                width: 220px;
-                height: 220px;
-                right: -76px;
-                bottom: -92px;
-                border-radius: 999px;
-                background: rgba(215, 168, 79, 0.22);
-            }
-
-            .kicker {
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                padding: 8px 12px;
-                border-radius: 999px;
-                background: var(--mws-color-brand-primary-soft);
-                color: var(--mws-color-brand-primary-strong);
-                font-family: "Plus Jakarta Sans", sans-serif;
-                font-size: 0.78rem;
-                font-weight: 800;
-                letter-spacing: 0.08em;
-                text-transform: uppercase;
-            }
-
-            h1,
-            h2,
-            h3 {
-                margin: 0;
-                font-family: "Plus Jakarta Sans", sans-serif;
-                letter-spacing: -0.035em;
-            }
-
-            h1 {
-                max-width: 780px;
-                margin-top: 18px;
-                font-size: clamp(2.2rem, 5vw, 4.8rem);
-                line-height: 0.98;
-            }
-
-            .hero p {
-                max-width: 720px;
-                color: var(--mws-color-text-secondary);
-                font-size: 1.08rem;
-                line-height: 1.7;
-            }
-
-            .hero-actions,
-            .tabs,
-            .toolbar,
-            .form-actions,
-            .request-meta,
-            .status-line,
-            .pill-row {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 12px;
-                align-items: center;
-            }
-
-            .stats-card {
-                padding: 24px;
-                display: grid;
-                gap: 16px;
-            }
-
-            .stat-grid {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 12px;
-            }
-
-            .stat {
-                padding: 16px;
-                border-radius: var(--mws-radius-md);
-                background: var(--mws-color-surface-raised);
-                border: 1px solid var(--mws-color-border);
-            }
-
-            .stat strong {
-                display: block;
-                font-family: "Plus Jakarta Sans", sans-serif;
-                font-size: 1.8rem;
-            }
-
-            .stat span {
-                color: var(--mws-color-text-secondary);
-                font-size: 0.85rem;
-            }
-
-            .btn {
-                display: inline-flex;
-                min-height: 44px;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                border-radius: 999px;
-                border: 1px solid transparent;
-                padding: 11px 18px;
-                font-family: "Plus Jakarta Sans", sans-serif;
-                font-weight: 800;
-                text-decoration: none;
-                transition:
-                    transform 160ms ease,
-                    box-shadow 160ms ease,
-                    background 160ms ease;
-            }
-
-            .btn:hover:not(:disabled) {
-                transform: translateY(-1px);
-            }
-
-            .btn:disabled {
-                cursor: not-allowed;
-                opacity: 0.65;
-            }
-
-            .btn-primary {
-                color: #fff;
-                background: var(--mws-color-brand-primary-strong);
-                box-shadow: 0 12px 22px rgba(95, 127, 97, 0.28);
-            }
-
-            .btn-outline {
-                color: var(--mws-color-brand-primary-strong);
-                background: rgba(255, 255, 255, 0.72);
-                border-color: var(--mws-color-border);
-            }
-
-            .btn-soft {
-                color: var(--mws-color-brand-primary-strong);
-                background: var(--mws-color-brand-primary-soft);
-            }
-
-            .tabs {
-                margin: 24px 0;
-                padding: 6px;
-                width: fit-content;
-                border-radius: 999px;
-                background: rgba(255, 255, 255, 0.75);
-                border: 1px solid var(--mws-color-border);
-            }
-
-            .tab {
-                border: 0;
-                color: var(--mws-color-text-secondary);
-                background: transparent;
-            }
-
-            .tab.active {
-                color: #fff;
-                background: var(--mws-color-brand-primary-strong);
-            }
-
-            .panel {
-                padding: clamp(20px, 4vw, 34px);
-            }
-
-            .panel-header {
-                display: flex;
-                justify-content: space-between;
-                gap: 16px;
-                align-items: flex-start;
-                margin-bottom: 24px;
-            }
-
-            .panel-header p {
-                margin: 8px 0 0;
-                color: var(--mws-color-text-secondary);
-            }
-
-            .section-title {
-                margin: 28px 0 16px;
-                padding-top: 24px;
-                border-top: 1px solid var(--mws-color-border);
-            }
-
-            .section-title:first-of-type {
-                margin-top: 0;
-                padding-top: 0;
-                border-top: 0;
-            }
-
-            .form-grid {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 18px;
-            }
-
-            .field.full {
-                grid-column: 1 / -1;
-            }
-
-            label {
-                display: block;
-                margin-bottom: 8px;
-                color: var(--mws-color-text-primary);
-                font-family: "Plus Jakarta Sans", sans-serif;
-                font-size: 0.9rem;
-                font-weight: 800;
-            }
-
-            .required {
-                color: var(--mws-color-danger);
-            }
-
-            input,
-            select,
-            textarea {
-                width: 100%;
-                border: 1px solid var(--mws-color-border);
-                border-radius: var(--mws-radius-sm);
-                color: var(--mws-color-text-primary);
-                background: rgba(255, 255, 255, 0.92);
-                padding: 13px 14px;
-                outline: none;
-                transition:
-                    border-color 160ms ease,
-                    box-shadow 160ms ease;
-            }
-
-            textarea {
-                min-height: 112px;
-                resize: vertical;
-            }
-
-            input:focus,
-            select:focus,
-            textarea:focus {
-                border-color: var(--mws-color-brand-primary);
-                box-shadow: 0 0 0 4px rgba(139, 168, 136, 0.18);
-            }
-
-            .helper {
-                margin-top: 6px;
-                color: var(--mws-color-text-muted);
-                font-size: 0.86rem;
-            }
-
-            .alert {
-                margin-bottom: 18px;
-                padding: 14px 16px;
-                border-radius: var(--mws-radius-sm);
-                border: 1px solid var(--mws-color-border);
-                background: var(--mws-color-brand-primary-soft);
-                color: var(--mws-color-brand-primary-strong);
-                font-weight: 700;
-            }
-
-            .alert.error {
-                color: #8f3433;
-                background: #fff1f1;
-                border-color: #f3c7c7;
-            }
-
-            .toolbar {
-                justify-content: space-between;
-                margin-bottom: 20px;
-            }
-
-            .toolbar-controls {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-
-            .toolbar input,
-            .toolbar select {
-                width: auto;
-                min-width: 210px;
-            }
-
-            .requests-grid {
-                display: grid;
-                gap: 16px;
-            }
-
-            .request-card {
-                padding: 20px;
-            }
-
-            .request-card-header {
-                display: flex;
-                justify-content: space-between;
-                gap: 16px;
-                align-items: flex-start;
-            }
-
-            .request-card h3 {
-                font-size: 1.2rem;
-            }
-
-            .request-card p {
-                color: var(--mws-color-text-secondary);
-                line-height: 1.55;
-            }
-
-            .request-meta {
-                margin: 10px 0;
-                color: var(--mws-color-text-muted);
-                font-size: 0.9rem;
-            }
-
-            .pill {
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                width: fit-content;
-                border-radius: 999px;
-                padding: 6px 10px;
-                color: var(--mws-color-brand-primary-strong);
-                background: var(--mws-color-brand-primary-soft);
-                font-size: 0.82rem;
-                font-weight: 800;
-            }
-
-            .pill.gold {
-                color: #7b5720;
-                background: #fff5dc;
-            }
-
-            .pill.red {
-                color: #8f3433;
-                background: #fff1f1;
-            }
-
-            .progress {
-                display: grid;
-                grid-template-columns: repeat(5, minmax(0, 1fr));
-                gap: 8px;
-                margin-top: 16px;
-            }
-
-            .progress-step {
-                min-height: 10px;
-                border-radius: 999px;
-                background: #e3eadf;
-            }
-
-            .progress-step.done {
-                background: var(--mws-color-brand-primary-strong);
-            }
-
-            .progress-step.warning {
-                background: var(--mws-color-brand-gold);
-            }
-
-            .progress-step.rejected {
-                background: var(--mws-color-danger);
-            }
-
-            .empty-state {
-                padding: 36px;
-                text-align: center;
-            }
-
-            .modal-backdrop {
-                position: fixed;
-                inset: 0;
-                z-index: 40;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
-                background: rgba(34, 49, 39, 0.42);
-            }
-
-            .modal-card {
-                width: min(860px, 100%);
-                max-height: min(86vh, 900px);
-                overflow: auto;
-                padding: 28px;
-            }
-
-            .detail-grid {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 14px;
-                margin-top: 20px;
-            }
-
-            .detail-item {
-                padding: 14px;
-                border: 1px solid var(--mws-color-border);
-                border-radius: var(--mws-radius-sm);
-                background: var(--mws-color-surface-raised);
-            }
-
-            .detail-item.full {
-                grid-column: 1 / -1;
-            }
-
-            .detail-label {
-                color: var(--mws-color-text-muted);
-                font-size: 0.78rem;
-                font-weight: 800;
-                letter-spacing: 0.04em;
-                text-transform: uppercase;
-            }
-
-            .detail-value {
-                margin-top: 6px;
-                white-space: pre-wrap;
-            }
-
-            .loading {
-                padding: 32px;
-                color: var(--mws-color-text-secondary);
-                text-align: center;
-            }
-
-            @media (max-width: 820px) {
-                .hero,
-                .form-grid,
-                .detail-grid {
-                    grid-template-columns: 1fr;
+<head>
+    <</head>base target="_top" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <style>
+        :root {
+            --mws-sage-900: #294234;
+            --mws-sage-800: #3f6149;
+            --mws-sage-700: #55785b;
+            --mws-sage-500: #8ba888;
+            --mws-sage-300: #c7d7c2;
+            --mws-sage-100: #edf4ea;
+            --mws-sage-50: #f6f9f4;
+            --mws-gold-600: #b8842e;
+            --mws-gold-400: #d7a84f;
+            --mws-gold-100: #fbefd2;
+            --mws-ink: #203128;
+            --mws-muted: #66736a;
+            --mws-border: #dbe5d7;
+            --mws-white: #ffffff;
+            --mws-danger: #b54948;
+            --mws-danger-soft: #fff0ef;
+            --mws-shadow-lg: 0 24px 70px rgba(45, 68, 51, 0.13);
+            --mws-shadow-md: 0 12px 34px rgba(45, 68, 51, 0.09);
+            --mws-radius-xl: 30px;
+            --mws-radius-lg: 22px;
+            --mws-radius-md: 15px;
+            --mws-radius-sm: 11px;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--mws-ink);
+            background:
+                radial-gradient(circle at 6% 2%, rgba(215, 168, 79, .15), transparent 24rem),
+                radial-gradient(circle at 95% 8%, rgba(139, 168, 136, .24), transparent 30rem),
+                #f7f9f4;
+            font-family: "Nunito Sans", system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .32;
+            background-image: radial-gradient(rgba(63, 97, 73, .18) .65px, transparent .65px);
+            background-size: 18px 18px;
+            mask-image: linear-gradient(to bottom, black, transparent 55%);
+        }
+        button, input, select, textarea { font: inherit; }
+        button { cursor: pointer; }
+        button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 3px solid rgba(215, 168, 79, .45);
+            outline-offset: 2px;
+        }
+        h1, h2, h3, h4 { margin: 0; font-family: "Plus Jakarta Sans", sans-serif; letter-spacing: -.035em; }
+        p { margin-top: 0; }
+
+        .app-shell { width: min(1220px, calc(100% - 32px)); margin: 0 auto; padding: 18px 0 64px; position: relative; }
+        .topbar {
+            min-height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 18px;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-mark {
+            width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center;
+            color: white; background: var(--mws-sage-800); box-shadow: 0 10px 22px rgba(63, 97, 73, .22);
+        }
+        .brand-copy strong { display: block; font-family: "Plus Jakarta Sans", sans-serif; font-size: .98rem; }
+        .brand-copy span { display: block; color: var(--mws-muted); font-size: .78rem; margin-top: 1px; }
+        .topbar-actions { display: flex; align-items: center; gap: 10px; }
+        .language-picker {
+            display: flex; align-items: center; gap: 5px; padding: 5px;
+            background: rgba(255,255,255,.82); border: 1px solid var(--mws-border); border-radius: 999px;
+            box-shadow: 0 6px 18px rgba(45,68,51,.06); backdrop-filter: blur(12px);
+        }
+        .language-option {
+            min-width: 43px; min-height: 34px; border: 0; border-radius: 999px; padding: 7px 11px;
+            background: transparent; color: var(--mws-muted); font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: .75rem; font-weight: 800; transition: .18s ease;
+        }
+        .language-option.active { color: white; background: var(--mws-sage-800); box-shadow: 0 5px 14px rgba(63,97,73,.2); }
+
+        .hero {
+            position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(310px, .55fr);
+            min-height: 430px; border-radius: var(--mws-radius-xl); background: var(--mws-sage-900);
+            color: white; box-shadow: var(--mws-shadow-lg); isolation: isolate;
+        }
+        .hero::before {
+            content: ""; position: absolute; width: 540px; height: 540px; border: 1px solid rgba(255,255,255,.09);
+            border-radius: 50%; right: -190px; top: -245px; box-shadow: 0 0 0 58px rgba(255,255,255,.025), 0 0 0 116px rgba(255,255,255,.018); z-index: -1;
+        }
+        .hero-main { padding: clamp(34px, 6vw, 70px); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px;
+            color: var(--mws-sage-100); background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.12);
+            font-family: "Plus Jakarta Sans", sans-serif; font-size: .74rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
+        }
+        .eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mws-gold-400); box-shadow: 0 0 0 4px rgba(215,168,79,.13); }
+        .hero h1 { max-width: 780px; margin: 20px 0 18px; font-size: clamp(2.45rem, 5.8vw, 5.35rem); line-height: .98; }
+        .hero-description { max-width: 670px; color: rgba(255,255,255,.72); font-size: 1.08rem; line-height: 1.72; }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 12px; }
+        .hero-aside { padding: 28px; display: flex; align-items: flex-end; }
+        .overview-card {
+            width: 100%; padding: 24px; border: 1px solid rgba(255,255,255,.14); border-radius: var(--mws-radius-lg);
+            background: rgba(255,255,255,.09); backdrop-filter: blur(16px); box-shadow: inset 0 1px rgba(255,255,255,.08);
+        }
+        .overview-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+        .overview-head strong { font-family: "Plus Jakarta Sans", sans-serif; font-size: .95rem; }
+        .live-badge { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,.72); font-size: .76rem; font-weight: 800; }
+        .live-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #a9d4a7; box-shadow: 0 0 0 4px rgba(169,212,167,.12); }
+        .stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .stat { min-height: 94px; padding: 15px; border-radius: var(--mws-radius-md); background: rgba(255,255,255,.075); border: 1px solid rgba(255,255,255,.1); }
+        .stat strong { display: block; font-family: "Plus Jakarta Sans", sans-serif; font-size: 1.85rem; line-height: 1; }
+        .stat span { display: block; margin-top: 9px; color: rgba(255,255,255,.62); font-size: .79rem; }
+
+        .btn {
+            display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 17px; border: 1px solid transparent; border-radius: 999px; text-decoration: none;
+            font-family: "Plus Jakarta Sans", sans-serif; font-size: .86rem; font-weight: 800;
+            transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
+        }
+        .btn:hover:not(:disabled) { transform: translateY(-2px); }
+        .btn:disabled { cursor: not-allowed; opacity: .62; }
+        .btn-primary { color: white; background: var(--mws-sage-800); box-shadow: 0 10px 22px rgba(63,97,73,.24); }
+        .btn-primary:hover:not(:disabled) { background: var(--mws-sage-700); }
+        .btn-gold { color: #3d2a0c; background: var(--mws-gold-400); box-shadow: 0 11px 25px rgba(215,168,79,.18); }
+        .btn-light { color: white; background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.18); }
+        .btn-outline { color: var(--mws-sage-800); background: white; border-color: var(--mws-border); box-shadow: 0 6px 18px rgba(45,68,51,.06); }
+        .btn-soft { color: var(--mws-sage-800); background: var(--mws-sage-100); }
+        .btn-icon { width: 18px; height: 18px; flex: 0 0 auto; }
+
+        .workspace { margin-top: 22px; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 18px; align-items: start; }
+        .sidebar {
+            position: sticky; top: 18px; padding: 11px; border-radius: var(--mws-radius-lg); background: rgba(255,255,255,.84);
+            border: 1px solid var(--mws-border); box-shadow: var(--mws-shadow-md); backdrop-filter: blur(16px);
+        }
+        .nav-label { padding: 10px 12px 7px; color: var(--mws-muted); font-size: .69rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+        .tab {
+            width: 100%; min-height: 50px; display: flex; align-items: center; gap: 11px; margin: 3px 0; padding: 10px 13px;
+            border: 0; border-radius: 13px; color: var(--mws-muted); background: transparent; text-align: left;
+            font-family: "Plus Jakarta Sans", sans-serif; font-size: .84rem; font-weight: 800; transition: .18s ease;
+        }
+        .tab:hover { color: var(--mws-sage-800); background: var(--mws-sage-50); }
+        .tab.active { color: white; background: var(--mws-sage-800); box-shadow: 0 9px 20px rgba(63,97,73,.2); }
+        .tab .btn-icon { width: 19px; height: 19px; }
+        .sidebar-note { margin-top: 11px; padding: 14px; border-radius: 13px; background: var(--mws-gold-100); color: #75531e; font-size: .78rem; line-height: 1.5; }
+
+        .content { min-width: 0; }
+        .panel {
+            padding: clamp(22px, 4vw, 38px); border-radius: var(--mws-radius-xl); background: rgba(255,255,255,.9);
+            border: 1px solid var(--mws-border); box-shadow: var(--mws-shadow-md); backdrop-filter: blur(16px);
+        }
+        .panel-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 28px; }
+        .panel-heading { display: flex; gap: 15px; align-items: flex-start; }
+        .heading-icon { width: 45px; height: 45px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 14px; color: var(--mws-sage-800); background: var(--mws-sage-100); }
+        .heading-icon .btn-icon { width: 22px; height: 22px; }
+        .panel-header h2 { font-size: clamp(1.45rem, 3vw, 2rem); }
+        .panel-header p { max-width: 680px; margin: 7px 0 0; color: var(--mws-muted); line-height: 1.58; }
+        .admin-chip { display: inline-flex; margin-bottom: 8px; color: var(--mws-gold-600); font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+
+        .alert { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 18px; padding: 14px 16px; border: 1px solid var(--mws-sage-300); border-radius: var(--mws-radius-md); color: var(--mws-sage-800); background: var(--mws-sage-100); font-weight: 700; }
+        .alert.error { color: #8c3433; border-color: #efc2c0; background: var(--mws-danger-soft); }
+        .alert .btn-icon { margin-top: 1px; }
+
+        .section-title { display: flex; align-items: center; gap: 12px; margin: 30px 0 17px; padding-top: 28px; border-top: 1px solid var(--mws-border); font-size: 1.03rem; }
+        .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: 0; }
+        .section-number { width: 29px; height: 29px; display: grid; place-items: center; border-radius: 9px; color: var(--mws-sage-800); background: var(--mws-sage-100); font-size: .78rem; letter-spacing: 0; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .field.full { grid-column: 1 / -1; }
+        label { display: block; margin-bottom: 7px; color: var(--mws-ink); font-family: "Plus Jakarta Sans", sans-serif; font-size: .82rem; font-weight: 800; }
+        .required { color: var(--mws-danger); }
+        input, select, textarea {
+            width: 100%; min-height: 48px; padding: 12px 14px; border: 1px solid var(--mws-border); border-radius: var(--mws-radius-sm);
+            color: var(--mws-ink); background: #fff; outline: none; transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+        }
+        textarea { min-height: 118px; resize: vertical; line-height: 1.55; }
+        input:hover, select:hover, textarea:hover { border-color: var(--mws-sage-300); }
+        input:focus, select:focus, textarea:focus { border-color: var(--mws-sage-500); box-shadow: 0 0 0 4px rgba(139,168,136,.15); }
+        .helper { margin-top: 6px; color: var(--mws-muted); font-size: .8rem; line-height: 1.45; }
+        .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 13px; margin-top: 27px; padding-top: 22px; border-top: 1px solid var(--mws-border); }
+        .form-actions .helper { margin: 0; max-width: 470px; }
+
+        .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 20px; padding: 13px; border-radius: var(--mws-radius-md); background: var(--mws-sage-50); border: 1px solid var(--mws-border); }
+        .toolbar-controls { flex: 1; display: grid; grid-template-columns: minmax(190px, 1fr) 160px 150px; gap: 9px; }
+        .toolbar input, .toolbar select { min-height: 43px; padding-top: 9px; padding-bottom: 9px; font-size: .86rem; }
+        .result-count { white-space: nowrap; color: var(--mws-muted); font-size: .78rem; font-weight: 700; }
+        .requests-grid { display: grid; gap: 13px; }
+        .request-card { position: relative; overflow: hidden; padding: 21px; border-radius: var(--mws-radius-lg); background: white; border: 1px solid var(--mws-border); transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+        .request-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--mws-sage-500); opacity: .7; }
+        .request-card:hover { transform: translateY(-2px); border-color: var(--mws-sage-300); box-shadow: 0 13px 28px rgba(45,68,51,.09); }
+        .request-card-header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+        .request-card h3 { margin-top: 11px; font-size: 1.12rem; line-height: 1.3; }
+        .request-card > p { margin: 14px 0; color: var(--mws-muted); line-height: 1.55; }
+        .pill-row, .request-meta, .status-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+        .request-meta { margin-top: 7px; color: var(--mws-muted); font-size: .82rem; }
+        .meta-dot { color: var(--mws-sage-300); }
+        .pill { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 6px 9px; border-radius: 999px; color: var(--mws-sage-800); background: var(--mws-sage-100); font-size: .72rem; font-weight: 800; }
+        .pill.gold { color: #7b5720; background: var(--mws-gold-100); }
+        .pill.red { color: #8f3433; background: var(--mws-danger-soft); }
+        .pill.neutral { color: var(--mws-muted); background: #f1f3f0; }
+        .status-line { margin-top: 5px; font-size: .82rem; }
+        .status-line strong { font-family: "Plus Jakarta Sans", sans-serif; }
+        .status-line span:not(.helper) { color: var(--mws-muted); }
+        .status-line .helper { margin: 0 0 0 auto; }
+        .progress { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin-top: 14px; }
+        .progress-step { height: 7px; border-radius: 999px; background: #e4ebe1; }
+        .progress-step.done { background: var(--mws-sage-700); }
+        .progress-step.warning { background: var(--mws-gold-400); }
+        .progress-step.rejected { background: var(--mws-danger); }
+        .loading, .empty-state { padding: 46px 24px; border: 1px dashed var(--mws-sage-300); border-radius: var(--mws-radius-lg); color: var(--mws-muted); text-align: center; background: var(--mws-sage-50); }
+        .empty-icon { width: 52px; height: 52px; margin: 0 auto 14px; display: grid; place-items: center; border-radius: 17px; color: var(--mws-sage-800); background: var(--mws-sage-100); }
+        .empty-state h3 { color: var(--mws-ink); margin-bottom: 8px; }
+        .empty-state p { margin: 0; }
+
+        .modal-backdrop { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(25,41,31,.58); backdrop-filter: blur(7px); }
+        .modal-card { width: min(900px, 100%); max-height: min(89vh, 960px); overflow: auto; padding: clamp(22px, 4vw, 34px); border-radius: var(--mws-radius-xl); background: white; border: 1px solid rgba(255,255,255,.6); box-shadow: 0 30px 90px rgba(18,32,23,.3); }
+        .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+        .detail-item { padding: 15px; border: 1px solid var(--mws-border); border-radius: var(--mws-radius-md); background: var(--mws-sage-50); }
+        .detail-item.full { grid-column: 1 / -1; }
+        .detail-label { color: var(--mws-muted); font-size: .68rem; font-weight: 800; letter-spacing: .075em; text-transform: uppercase; }
+        .detail-value { margin-top: 7px; line-height: 1.52; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+        @media (max-width: 960px) {
+            .hero { grid-template-columns: 1fr; }
+            .hero-aside { padding-top: 0; }
+            .workspace { grid-template-columns: 1fr; }
+            .sidebar { position: static; display: flex; gap: 6px; overflow-x: auto; }
+            .nav-label, .sidebar-note { display: none; }
+            .tab { width: auto; min-width: max-content; padding-right: 16px; }
+            .toolbar { align-items: stretch; flex-direction: column; }
+            .toolbar-controls { grid-template-columns: 1fr 1fr; }
+            .toolbar-controls input { grid-column: 1 / -1; }
+        }
+        @media (max-width: 680px) {
+            .app-shell { width: min(100% - 20px, 1220px); padding-top: 10px; }
+            .brand-copy span { display: none; }
+            .topbar { min-height: 56px; }
+            .hero-main { padding: 34px 23px; }
+            .hero-aside { padding: 0 17px 17px; }
+            .hero h1 { font-size: clamp(2.35rem, 13vw, 3.5rem); }
+            .hero-actions, .hero-actions .btn { width: 100%; }
+            .form-grid, .detail-grid { grid-template-columns: 1fr; }
+            .field.full, .detail-item.full { grid-column: auto; }
+            .panel-header, .request-card-header { flex-direction: column; align-items: stretch; }
+            .panel-header > .btn, .request-card-header > .btn { width: 100%; }
+            .panel { padding: 21px 16px; }
+            .panel-heading { gap: 11px; }
+            .heading-icon { width: 39px; height: 39px; border-radius: 12px; }
+            .toolbar-controls { grid-template-columns: 1fr; }
+            .toolbar-controls input { grid-column: auto; }
+            .status-line .helper { width: 100%; margin-left: 0; }
+            .form-actions .btn { width: 100%; }
+            .modal-backdrop { padding: 10px; }
+            .modal-card { border-radius: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        (() => {
+            const h = React.createElement;
+            const { useEffect, useMemo, useState } = React;
+
+            const translations = {
+                en: {
+                    brandSub: "Solutions request portal",
+                    language: "Language",
+                    navLabel: "Workspace",
+                    navSubmit: "Submit request",
+                    navTracker: "Progress tracker",
+                    navAdmin: "Admin review",
+                    navNote: "Ideas become more useful when the problem and desired impact are clearly described.",
+                    heroKicker: "MAD Labs · Heart & Purpose",
+                    heroTitle: "Turn everyday challenges into better solutions.",
+                    heroDescription: "Share an idea, problem, or process improvement with MAD Labs. Submit the need once, then follow every step from review to delivery in one transparent workspace.",
+                    heroSubmit: "Start a request",
+                    heroTrack: "Explore progress",
+                    overview: "Request overview",
+                    live: "Live",
+                    statTotal: "Total requests",
+                    statReview: "Under review",
+                    statActive: "Active builds",
+                    statDone: "Completed",
+                    formTitle: "Solution development request",
+                    formDescription: "Tell us what is happening today, who it affects, and what a successful outcome should look like.",
+                    sectionOverview: "Request overview",
+                    sectionProblem: "Problem statement",
+                    sectionIdea: "Proposed idea",
+                    sectionRequirements: "Requirements",
+                    sectionTimeline: "Priority & timeline",
+                    requestTitle: "Request title",
+                    department: "Department",
+                    requesterName: "Requester name",
+                    dateOfRequest: "Date of request",
+                    problemQuestion: "What problem are you facing?",
+                    problemHelper: "Describe the current situation clearly. What is not working or feels inefficient?",
+                    impactQuestion: "Why does this matter?",
+                    impactHelper: "Explain the impact: time wasted, errors, confusion, delays, or other effects.",
+                    dataQuestion: "What data do you currently have?",
+                    dataHelper: "Documents, Sheets, forms, apps, systems, or other available data sources.",
+                    hasSolution: "Do you already have a solution in mind?",
+                    proposedSolution: "If yes, describe it briefly",
+                    proposedHelper: "For example: a dashboard, automation, mobile app, or AI tool.",
+                    reference: "Reference / example",
+                    referenceHelper: "Add links, screenshots, tools, or products you have seen.",
+                    feature1: "Key feature 1",
+                    feature2: "Key feature 2",
+                    feature3: "Key feature 3",
+                    users: "Who will use this?",
+                    usersHelper: "For example: teachers, students, staff, or parents.",
+                    success: "What does success look like?",
+                    successHelper: "Be specific: faster processes, fewer errors, automation, better reporting, and so on.",
+                    priority: "Priority level",
+                    deadline: "Deadline (if any)",
+                    notes: "Additional notes",
+                    notesHelper: "Anything else MAD Labs should know: constraints, expectations, or context.",
+                    submit: "Submit request",
+                    submitting: "Submitting…",
+                    submitNote: "After submission, the request will appear in the public progress tracker.",
+                    successSubmit: "Request submitted successfully. Tracking ID: {id}",
+                    identifyError: "Could not identify the signed-in user.",
+                    loadError: "Could not load requests.",
+                    submitError: "Submission failed.",
+                    trackerTitle: "Public progress tracker",
+                    trackerDescription: "See submitted requests and the latest MAD Labs delivery status in one place.",
+                    refresh: "Refresh",
+                    search: "Search by ID, title, or requester…",
+                    searchAria: "Search requests",
+                    filterStatus: "Filter by status",
+                    filterPriority: "Filter by priority",
+                    showing: "Showing {shown} of {total} requests",
+                    loading: "Loading requests…",
+                    emptyTitle: "No requests found",
+                    emptyDescription: "Adjust the filters or submit the first solution request.",
+                    requestedBy: "Requested by",
+                    viewDetails: "View details",
+                    progress: "Progress",
+                    lastUpdated: "Last updated",
+                    prioritySuffix: "priority",
+                    deadlineLabel: "Deadline",
+                    close: "Close",
+                    detailsProblem: "Problem",
+                    detailsImpact: "Why it matters",
+                    detailsData: "Current data",
+                    detailsSolutionMind: "Solution in mind",
+                    detailsIdea: "Proposed idea",
+                    detailsReference: "Reference / example",
+                    detailsFeatures: "Key features",
+                    detailsUsers: "Users",
+                    detailsSuccess: "Success criteria",
+                    detailsNotes: "Additional notes",
+                    reviewedBy: "Reviewed by",
+                    feasibility: "Feasibility",
+                    impactLevel: "Impact level",
+                    decision: "Decision",
+                    madNotes: "MAD Labs notes",
+                    notProvided: "Not provided",
+                    pending: "Pending",
+                    noNotes: "No notes yet",
+                    adminOnly: "Admin only",
+                    adminTitle: "Submission review",
+                    adminDescription: "Signed in as {email}. Update assessment fields and publish progress for everyone.",
+                    searchSubmissions: "Search submissions…",
+                    showingSubmissions: "Showing {shown} of {total} submissions",
+                    noSubmissions: "No submissions found.",
+                    review: "Review",
+                    status: "Status",
+                    saveReview: "Save review",
+                    saving: "Saving…",
+                    saveError: "Could not save review.",
+                    yes: "Yes",
+                    no: "No",
+                    all: "All",
+                    low: "Low",
+                    medium: "Medium",
+                    high: "High",
+                    easy: "Easy",
+                    complex: "Complex",
+                    submitted: "Submitted",
+                    approved: "Approved",
+                    rejected: "Rejected",
+                    mvp: "MVP",
+                    done: "Done",
+                    backlog: "Backlog",
+                    progressSubmitted: "Submitted and waiting for MAD Labs review.",
+                    progressReviewing: "MAD Labs is reviewing feasibility and impact.",
+                    progressApproved: "Approved and ready for MVP development.",
+                    progressMvp: "The MVP is being built, tested, or improved.",
+                    progressDone: "Solution completed.",
+                    progressBacklog: "Accepted into the backlog for future planning.",
+                    progressRejected: "Reviewed and not approved at this time."
+                },
+                id: {
+                    brandSub: "Portal pengajuan solusi",
+                    language: "Bahasa",
+                    navLabel: "Ruang kerja",
+                    navSubmit: "Ajukan permintaan",
+                    navTracker: "Pelacak progres",
+                    navAdmin: "Tinjauan admin",
+                    navNote: "Ide menjadi lebih bermanfaat ketika masalah dan dampak yang diharapkan dijelaskan dengan jelas.",
+                    heroKicker: "MAD Labs · Heart & Purpose",
+                    heroTitle: "Ubah tantangan sehari-hari menjadi solusi yang lebih baik.",
+                    heroDescription: "Bagikan ide, masalah, atau perbaikan proses kepada MAD Labs. Ajukan kebutuhan satu kali, lalu ikuti setiap tahap dari peninjauan hingga penyelesaian dalam satu ruang kerja yang transparan.",
+                    heroSubmit: "Mulai pengajuan",
+                    heroTrack: "Lihat progres",
+                    overview: "Ringkasan permintaan",
+                    live: "Langsung",
+                    statTotal: "Total permintaan",
+                    statReview: "Sedang ditinjau",
+                    statActive: "Sedang dikerjakan",
+                    statDone: "Selesai",
+                    formTitle: "Pengajuan pengembangan solusi",
+                    formDescription: "Ceritakan kondisi saat ini, siapa yang terdampak, dan seperti apa hasil yang berhasil.",
+                    sectionOverview: "Ringkasan permintaan",
+                    sectionProblem: "Pernyataan masalah",
+                    sectionIdea: "Ide solusi",
+                    sectionRequirements: "Kebutuhan",
+                    sectionTimeline: "Prioritas & waktu",
+                    requestTitle: "Judul permintaan",
+                    department: "Departemen",
+                    requesterName: "Nama pengaju",
+                    dateOfRequest: "Tanggal pengajuan",
+                    problemQuestion: "Masalah apa yang Anda hadapi?",
+                    problemHelper: "Jelaskan kondisi saat ini dengan jelas. Apa yang tidak berjalan atau terasa tidak efisien?",
+                    impactQuestion: "Mengapa hal ini penting?",
+                    impactHelper: "Jelaskan dampaknya: waktu terbuang, kesalahan, kebingungan, keterlambatan, atau dampak lainnya.",
+                    dataQuestion: "Data apa yang saat ini tersedia?",
+                    dataHelper: "Dokumen, Sheets, formulir, aplikasi, sistem, atau sumber data lain yang tersedia.",
+                    hasSolution: "Apakah Anda sudah memiliki solusi dalam pikiran?",
+                    proposedSolution: "Jika ya, jelaskan secara singkat",
+                    proposedHelper: "Contoh: dasbor, otomatisasi, aplikasi seluler, atau alat AI.",
+                    reference: "Referensi / contoh",
+                    referenceHelper: "Tambahkan tautan, tangkapan layar, alat, atau produk yang pernah Anda lihat.",
+                    feature1: "Fitur utama 1",
+                    feature2: "Fitur utama 2",
+                    feature3: "Fitur utama 3",
+                    users: "Siapa yang akan menggunakannya?",
+                    usersHelper: "Contoh: guru, siswa, staf, atau orang tua.",
+                    success: "Seperti apa hasil yang berhasil?",
+                    successHelper: "Jelaskan secara spesifik: proses lebih cepat, lebih sedikit kesalahan, otomatisasi, pelaporan lebih baik, dan sebagainya.",
+                    priority: "Tingkat prioritas",
+                    deadline: "Tenggat waktu (jika ada)",
+                    notes: "Catatan tambahan",
+                    notesHelper: "Hal lain yang perlu diketahui MAD Labs: batasan, ekspektasi, atau konteks.",
+                    submit: "Ajukan permintaan",
+                    submitting: "Mengirim…",
+                    submitNote: "Setelah dikirim, permintaan akan muncul di pelacak progres publik.",
+                    successSubmit: "Permintaan berhasil dikirim. ID pelacakan: {id}",
+                    identifyError: "Tidak dapat mengenali pengguna yang masuk.",
+                    loadError: "Tidak dapat memuat permintaan.",
+                    submitError: "Pengajuan gagal.",
+                    trackerTitle: "Pelacak progres publik",
+                    trackerDescription: "Lihat semua permintaan dan status penyelesaian terbaru dari MAD Labs dalam satu tempat.",
+                    refresh: "Muat ulang",
+                    search: "Cari berdasarkan ID, judul, atau pengaju…",
+                    searchAria: "Cari permintaan",
+                    filterStatus: "Filter berdasarkan status",
+                    filterPriority: "Filter berdasarkan prioritas",
+                    showing: "Menampilkan {shown} dari {total} permintaan",
+                    loading: "Memuat permintaan…",
+                    emptyTitle: "Permintaan tidak ditemukan",
+                    emptyDescription: "Sesuaikan filter atau ajukan permintaan solusi pertama.",
+                    requestedBy: "Diajukan oleh",
+                    viewDetails: "Lihat detail",
+                    progress: "Progres",
+                    lastUpdated: "Terakhir diperbarui",
+                    prioritySuffix: "prioritas",
+                    deadlineLabel: "Tenggat",
+                    close: "Tutup",
+                    detailsProblem: "Masalah",
+                    detailsImpact: "Mengapa penting",
+                    detailsData: "Data saat ini",
+                    detailsSolutionMind: "Sudah ada solusi",
+                    detailsIdea: "Ide yang diajukan",
+                    detailsReference: "Referensi / contoh",
+                    detailsFeatures: "Fitur utama",
+                    detailsUsers: "Pengguna",
+                    detailsSuccess: "Kriteria keberhasilan",
+                    detailsNotes: "Catatan tambahan",
+                    reviewedBy: "Ditinjau oleh",
+                    feasibility: "Kelayakan",
+                    impactLevel: "Tingkat dampak",
+                    decision: "Keputusan",
+                    madNotes: "Catatan MAD Labs",
+                    notProvided: "Tidak diberikan",
+                    pending: "Menunggu",
+                    noNotes: "Belum ada catatan",
+                    adminOnly: "Khusus admin",
+                    adminTitle: "Tinjauan pengajuan",
+                    adminDescription: "Masuk sebagai {email}. Perbarui penilaian dan publikasikan progres untuk semua orang.",
+                    searchSubmissions: "Cari pengajuan…",
+                    showingSubmissions: "Menampilkan {shown} dari {total} pengajuan",
+                    noSubmissions: "Pengajuan tidak ditemukan.",
+                    review: "Tinjau",
+                    status: "Status",
+                    saveReview: "Simpan tinjauan",
+                    saving: "Menyimpan…",
+                    saveError: "Tidak dapat menyimpan tinjauan.",
+                    yes: "Ya",
+                    no: "Tidak",
+                    all: "Semua",
+                    low: "Rendah",
+                    medium: "Sedang",
+                    high: "Tinggi",
+                    easy: "Mudah",
+                    complex: "Kompleks",
+                    submitted: "Diajukan",
+                    approved: "Disetujui",
+                    rejected: "Ditolak",
+                    mvp: "MVP",
+                    done: "Selesai",
+                    backlog: "Backlog",
+                    progressSubmitted: "Telah diajukan dan menunggu tinjauan MAD Labs.",
+                    progressReviewing: "MAD Labs sedang meninjau kelayakan dan dampak.",
+                    progressApproved: "Disetujui dan siap untuk pengembangan MVP.",
+                    progressMvp: "MVP sedang dibuat, diuji, atau disempurnakan.",
+                    progressDone: "Solusi telah selesai.",
+                    progressBacklog: "Dimasukkan ke backlog untuk perencanaan mendatang.",
+                    progressRejected: "Telah ditinjau dan belum disetujui saat ini."
                 }
+            };
 
-                .field.full,
-                .detail-item.full {
-                    grid-column: auto;
-                }
+            const initialForm = {
+                requestTitle: "", department: "", requesterName: "",
+                dateOfRequest: new Date().toISOString().slice(0, 10),
+                problemStatement: "", impact: "", dataSources: "", hasSolution: "No",
+                proposedSolution: "", reference: "", feature1: "", feature2: "", feature3: "",
+                users: "", successCriteria: "", priority: "Medium", deadline: "", additionalNotes: ""
+            };
+            const progressOrder = ["Submitted", "Approved", "MVP", "Done"];
+            const terminalStatuses = ["Backlog", "Rejected"];
 
-                .panel-header,
-                .request-card-header,
-                .toolbar {
-                    flex-direction: column;
-                    align-items: stretch;
-                }
-
-                .toolbar input,
-                .toolbar select,
-                .btn {
-                    width: 100%;
-                }
-
-                .tabs {
-                    width: 100%;
-                }
-
-                .tab {
-                    flex: 1;
-                }
+            function runServer(functionName, ...args) {
+                return new Promise((resolve, reject) => {
+                    google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[functionName](...args);
+                });
             }
-        </style>
-    </head>
-    <body>
-        <div id="root"></div>
-
-        <script>
-            var MADLabsApp = (() => {
-                const { useEffect, useMemo, useState } = React;
-                const initialForm = {
-                    requestTitle: "",
-                    department: "",
-                    requesterName: "",
-                    dateOfRequest: /* @__PURE__ */ new Date()
-                        .toISOString()
-                        .slice(0, 10),
-                    problemStatement: "",
-                    impact: "",
-                    dataSources: "",
-                    hasSolution: "No",
-                    proposedSolution: "",
-                    reference: "",
-                    feature1: "",
-                    feature2: "",
-                    feature3: "",
-                    users: "",
-                    successCriteria: "",
-                    priority: "Medium",
-                    deadline: "",
-                    additionalNotes: "",
+            function format(text, values) {
+                return Object.keys(values || {}).reduce((result, key) => result.replace(`{${key}}`, values[key]), text);
+            }
+            function Icon({ name, className = "btn-icon" }) {
+                const paths = {
+                    leaf: ["M12 21c4.5-2.6 7-7.2 7-13-6 0-10.4 2.4-13 7 2.8.1 5.1-.4 7-1.4", "M5 21c2.2-5.2 5.6-8.7 10.5-11"],
+                    plus: ["M12 5v14", "M5 12h14"],
+                    chart: ["M4 19V9", "M10 19V5", "M16 19v-7", "M22 19H2"],
+                    shield: ["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10", "m9 12 2 2 4-4"],
+                    refresh: ["M20 11a8.1 8.1 0 0 0-15.5-2M4 4v5h5", "M4 13a8.1 8.1 0 0 0 15.5 2M20 20v-5h-5"],
+                    arrow: ["M5 12h14", "m13 6 6 6-6 6"],
+                    check: ["m5 12 4 4L19 6"],
+                    info: ["M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20", "M12 16v-4", "M12 8h.01"],
+                    search: ["M21 21l-4.35-4.35", "M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0"],
+                    inbox: ["M4 4h16v13H4z", "m4 13 4-4h8l4 4", "M9 17v3h6v-3"],
+                    form: ["M6 3h12v18H6z", "M9 8h6", "M9 12h6", "M9 16h4"]
                 };
-                const progressOrder = ["Submitted", "Approved", "MVP", "Done"];
-                const terminalStatuses = ["Backlog", "Rejected"];
-                function runServer(functionName, ...args) {
-                    return new Promise((resolve, reject) => {
-                        google.script.run
-                            .withSuccessHandler(resolve)
-                            .withFailureHandler(reject)
-                            [functionName](...args);
-                    });
-                }
-                function App() {
-                    const [activeTab, setActiveTab] = useState("submit");
-                    const [isAdmin, setIsAdmin] = useState(false);
-                    const [userEmail, setUserEmail] = useState("");
-                    const [requests, setRequests] = useState([]);
-                    const [loading, setLoading] = useState(true);
-                    const [submitting, setSubmitting] = useState(false);
-                    const [form, setForm] = useState(initialForm);
-                    const [message, setMessage] = useState(null);
-                    const [query, setQuery] = useState("");
-                    const [statusFilter, setStatusFilter] = useState("All");
-                    const [priorityFilter, setPriorityFilter] = useState("All");
-                    const [selectedRequest, setSelectedRequest] =
-                        useState(null);
-                    useEffect(() => {
-                        loadAppConfig();
-                        loadRequests();
-                    }, []);
-                    async function loadAppConfig() {
-                        try {
-                            const response = await runServer("getAppConfig");
-                            setIsAdmin(Boolean(response.isAdmin));
-                            setUserEmail(response.userEmail || "");
-                        } catch (error) {
-                            setMessage({
-                                type: "error",
-                                text: error.message || "Could not identify the signed-in user.",
-                            });
-                        }
-                    }
-                    async function loadRequests() {
-                        setLoading(true);
-                        try {
-                            const response = await runServer("getRequests");
-                            setRequests(response.requests || []);
-                        } catch (error) {
-                            setMessage({
-                                type: "error",
-                                text:
-                                    error.message || "Could not load requests.",
-                            });
-                        } finally {
-                            setLoading(false);
-                        }
-                    }
-                    function updateField(name, value) {
-                        setForm((current) => ({ ...current, [name]: value }));
-                    }
-                    async function handleSubmit(event) {
-                        event.preventDefault();
-                        setSubmitting(true);
-                        setMessage(null);
-                        try {
-                            const response = await runServer(
-                                "submitRequest",
-                                form,
-                            );
-                            setMessage({
-                                type: "success",
-                                text: `Request submitted successfully. Tracking ID: ${response.requestId}`,
-                            });
-                            setForm({
-                                ...initialForm,
-                                dateOfRequest: /* @__PURE__ */ new Date()
-                                    .toISOString()
-                                    .slice(0, 10),
-                            });
-                            await loadRequests();
-                            setActiveTab("track");
-                        } catch (error) {
-                            setMessage({
-                                type: "error",
-                                text: error.message || "Submission failed.",
-                            });
-                        } finally {
-                            setSubmitting(false);
-                        }
-                    }
-                    const filteredRequests = useMemo(() => {
-                        const normalizedQuery = query.trim().toLowerCase();
-                        return requests.filter((request) => {
-                            const matchesQuery =
-                                !normalizedQuery ||
-                                [
-                                    request.id,
-                                    request.requestTitle,
-                                    request.department,
-                                    request.requesterName,
-                                    request.problemStatement,
-                                    request.users,
-                                ]
-                                    .join(" ")
-                                    .toLowerCase()
-                                    .includes(normalizedQuery);
-                            const matchesStatus =
-                                statusFilter === "All" ||
-                                request.status === statusFilter;
-                            const matchesPriority =
-                                priorityFilter === "All" ||
-                                request.priority === priorityFilter;
-                            return (
-                                matchesQuery && matchesStatus && matchesPriority
-                            );
-                        });
-                    }, [requests, query, statusFilter, priorityFilter]);
-                    const stats = useMemo(() => {
-                        return {
-                            total: requests.length,
-                            reviewing: requests.filter((request) =>
-                                ["Submitted"].includes(request.status),
-                            ).length,
-                            active: requests.filter((request) =>
-                                ["Approved", "MVP", "In Progress"].includes(
-                                    request.status,
-                                ),
-                            ).length,
-                            completed: requests.filter((request) =>
-                                ["Done", "Completed"].includes(request.status),
-                            ).length,
-                        };
-                    }, [requests]);
-                    return /* @__PURE__ */ React.createElement(
-                        "main",
-                        { className: "app-shell" },
-                        /* @__PURE__ */ React.createElement(
-                            "section",
-                            {
-                                className: "hero",
-                                "aria-labelledby": "page-title",
-                            },
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                { className: "hero-card" },
-                                /* @__PURE__ */ React.createElement(
-                                    "span",
-                                    { className: "kicker" },
-                                    "MAD Labs \xB7 Heart & Purpose",
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    "h1",
-                                    { id: "page-title" },
-                                    "Solutions request and progress tracker",
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    "p",
-                                    null,
-                                    "Share an idea, problem, or process improvement with MAD Labs. Once submitted, the request appears in the public tracker so everyone can follow progress clearly.",
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    "div",
-                                    { className: "hero-actions" },
-                                    /* @__PURE__ */ React.createElement(
-                                        "button",
-                                        {
-                                            className: "btn btn-primary",
-                                            onClick: () =>
-                                                setActiveTab("submit"),
-                                        },
-                                        "Submit new request",
-                                    ),
-                                    /* @__PURE__ */ React.createElement(
-                                        "button",
-                                        {
-                                            className: "btn btn-outline",
-                                            onClick: () =>
-                                                setActiveTab("track"),
-                                        },
-                                        "View progress tracker",
-                                    ),
-                                ),
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                "aside",
-                                {
-                                    className: "hero-card stats-card",
-                                    "aria-label": "Request summary",
-                                },
-                                /* @__PURE__ */ React.createElement(
-                                    "span",
-                                    { className: "kicker" },
-                                    "Live Overview",
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    "div",
-                                    { className: "stat-grid" },
-                                    /* @__PURE__ */ React.createElement(Stat, {
-                                        label: "Total requests",
-                                        value: stats.total,
-                                    }),
-                                    /* @__PURE__ */ React.createElement(Stat, {
-                                        label: "Under review",
-                                        value: stats.reviewing,
-                                    }),
-                                    /* @__PURE__ */ React.createElement(Stat, {
-                                        label: "Active builds",
-                                        value: stats.active,
-                                    }),
-                                    /* @__PURE__ */ React.createElement(Stat, {
-                                        label: "Done",
-                                        value: stats.completed,
-                                    }),
-                                ),
-                            ),
-                        ),
-                        /* @__PURE__ */ React.createElement(
-                            "nav",
-                            {
-                                className: "tabs",
-                                "aria-label": "Main sections",
-                            },
-                            /* @__PURE__ */ React.createElement(
-                                "button",
-                                {
-                                    className: `btn tab ${activeTab === "submit" ? "active" : ""}`,
-                                    onClick: () => setActiveTab("submit"),
-                                },
-                                "Request Form",
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                "button",
-                                {
-                                    className: `btn tab ${activeTab === "track" ? "active" : ""}`,
-                                    onClick: () => setActiveTab("track"),
-                                },
-                                "Progress Tracker",
-                            ),
-                            isAdmin &&
-                                /* @__PURE__ */ React.createElement(
-                                    "button",
-                                    {
-                                        className: `btn tab ${activeTab === "admin" ? "active" : ""}`,
-                                        onClick: () => setActiveTab("admin"),
-                                    },
-                                    "Admin Review",
-                                ),
-                        ),
-                        message &&
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                {
-                                    className: `alert ${message.type === "error" ? "error" : ""}`,
-                                    role: "status",
-                                },
-                                message.text,
-                            ),
-                        activeTab === "submit"
-                            ? /* @__PURE__ */ React.createElement(RequestForm, {
-                                  form,
-                                  updateField,
-                                  onSubmit: handleSubmit,
-                                  submitting,
-                              })
-                            : activeTab === "admin" && isAdmin
-                              ? /* @__PURE__ */ React.createElement(AdminPanel, {
-                                    requests: filteredRequests,
-                                    allRequests: requests,
-                                    query,
-                                    setQuery,
-                                    statusFilter,
-                                    setStatusFilter,
-                                    priorityFilter,
-                                    setPriorityFilter,
-                                    onRefresh: loadRequests,
-                                    onUpdated: async () => {
-                                        await loadRequests();
-                                    },
-                                    userEmail,
-                                })
-                              : /* @__PURE__ */ React.createElement(Tracker, {
-                                    loading,
-                                    requests: filteredRequests,
-                                    allRequests: requests,
-                                    query,
-                                    setQuery,
-                                    statusFilter,
-                                    setStatusFilter,
-                                    priorityFilter,
-                                    setPriorityFilter,
-                                    onRefresh: loadRequests,
-                                    onSelect: setSelectedRequest,
-                              }),
-                        selectedRequest &&
-                            /* @__PURE__ */ React.createElement(RequestModal, {
-                                request: selectedRequest,
-                                onClose: () => setSelectedRequest(null),
-                            }),
-                    );
-                }
-                function Stat({ label, value }) {
-                    return /* @__PURE__ */ React.createElement(
-                        "div",
-                        { className: "stat" },
-                        /* @__PURE__ */ React.createElement(
-                            "strong",
-                            null,
-                            value,
-                        ),
-                        /* @__PURE__ */ React.createElement(
-                            "span",
-                            null,
-                            label,
-                        ),
-                    );
-                }
-                function RequestForm({
-                    form,
-                    updateField,
-                    onSubmit,
-                    submitting,
-                }) {
-                    return /* @__PURE__ */ React.createElement(
-                        "section",
-                        { className: "panel", "aria-labelledby": "form-title" },
-                        /* @__PURE__ */ React.createElement(
-                            "div",
-                            { className: "panel-header" },
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                null,
-                                /* @__PURE__ */ React.createElement(
-                                    "h2",
-                                    { id: "form-title" },
-                                    "MAD Labs Solution Development Form",
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    "p",
-                                    null,
-                                    "Include as much detail as possible so the team can understand the need and recommend the right solution.",
-                                ),
-                            ),
-                        ),
-                        /* @__PURE__ */ React.createElement(
-                            "form",
-                            { onSubmit },
-                            /* @__PURE__ */ React.createElement(
-                                FormSection,
-                                { title: "1. Request Overview" },
-                                /* @__PURE__ */ React.createElement(Input, {
-                                    label: "Request Title",
-                                    name: "requestTitle",
-                                    value: form.requestTitle,
-                                    onChange: updateField,
-                                    required: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Input, {
-                                    label: "Department",
-                                    name: "department",
-                                    value: form.department,
-                                    onChange: updateField,
-                                    required: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Input, {
-                                    label: "Requester Name",
-                                    name: "requesterName",
-                                    value: form.requesterName,
-                                    onChange: updateField,
-                                    required: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Input, {
-                                    label: "Date of Request",
-                                    name: "dateOfRequest",
-                                    type: "date",
-                                    value: form.dateOfRequest,
-                                    onChange: updateField,
-                                    required: true,
-                                }),
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                FormSection,
-                                { title: "2. Problem Statement" },
-                                /* @__PURE__ */ React.createElement(Textarea, {
-                                    className: "full",
-                                    label: "What problem are you facing?",
-                                    helper: "Describe the current situation clearly. What is not working? What is inefficient?",
-                                    name: "problemStatement",
-                                    value: form.problemStatement,
-                                    onChange: updateField,
-                                    required: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Textarea, {
-                                    className: "full",
-                                    label: "Why does this matter?",
-                                    helper: "Explain the impact: time wasted, errors, confusion, delays, or other effects.",
-                                    name: "impact",
-                                    value: form.impact,
-                                    onChange: updateField,
-                                    required: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Textarea, {
-                                    className: "full",
-                                    label: "What data do you currently have?",
-                                    helper: "Docs, Sheets, forms, apps, systems, or any other data sources.",
-                                    name: "dataSources",
-                                    value: form.dataSources,
-                                    onChange: updateField,
-                                }),
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                FormSection,
-                                { title: "3. Proposed Idea" },
-                                /* @__PURE__ */ React.createElement(Select, {
-                                    label: "Do you already have a solution in mind?",
-                                    name: "hasSolution",
-                                    value: form.hasSolution,
-                                    onChange: updateField,
-                                    options: ["No", "Yes"],
-                                }),
-                                /* @__PURE__ */ React.createElement(Textarea, {
-                                    label: "If yes, describe briefly",
-                                    helper: "Example: dashboard, automation, mobile app, AI tool.",
-                                    name: "proposedSolution",
-                                    value: form.proposedSolution,
-                                    onChange: updateField,
-                                }),
-                                /* @__PURE__ */ React.createElement(Textarea, {
-                                    className: "full",
-                                    label: "Reference / Example",
-                                    helper: "Links, screenshots, tools, or products you have seen.",
-                                    name: "reference",
-                                    value: form.reference,
-                                    onChange: updateField,
-                                }),
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                FormSection,
-                                { title: "4. Requirements" },
-                                /* @__PURE__ */ React.createElement(Input, {
-                                    label: "Key Feature 1",
-                                    name: "feature1",
-                                    value: form.feature1,
-                                    onChange: updateField,
-                                }),
-                                /* @__PURE__ */ React.createElement(Input, {
-                                    label: "Key Feature 2",
-                                    name: "feature2",
-                                    value: form.feature2,
-                                    onChange: updateField,
-                                }),
-                                /* @__PURE__ */ React.createElement(Input, {
-                                    label: "Key Feature 3",
-                                    name: "feature3",
-                                    value: form.feature3,
-                                    onChange: updateField,
-                                }),
-                                /* @__PURE__ */ React.createElement(Input, {
-                                    label: "Who will use this?",
-                                    helper: "Example: Teachers, Students, Staff, Parents.",
-                                    name: "users",
-                                    value: form.users,
-                                    onChange: updateField,
-                                    required: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Textarea, {
-                                    className: "full",
-                                    label: "What does success look like?",
-                                    helper: "Be specific: faster process, fewer errors, automation, better reporting, etc.",
-                                    name: "successCriteria",
-                                    value: form.successCriteria,
-                                    onChange: updateField,
-                                    required: true,
-                                }),
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                FormSection,
-                                { title: "5. Priority and Timeline" },
-                                /* @__PURE__ */ React.createElement(Select, {
-                                    label: "Priority Level",
-                                    name: "priority",
-                                    value: form.priority,
-                                    onChange: updateField,
-                                    options: ["Low", "Medium", "High"],
-                                    required: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Input, {
-                                    label: "Deadline (if any)",
-                                    name: "deadline",
-                                    type: "date",
-                                    value: form.deadline,
-                                    onChange: updateField,
-                                }),
-                                /* @__PURE__ */ React.createElement(Textarea, {
-                                    className: "full",
-                                    label: "Additional Notes",
-                                    helper: "Anything else MAD Labs should know: constraints, expectations, context.",
-                                    name: "additionalNotes",
-                                    value: form.additionalNotes,
-                                    onChange: updateField,
-                                }),
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                { className: "form-actions" },
-                                /* @__PURE__ */ React.createElement(
-                                    "button",
-                                    {
-                                        className: "btn btn-primary",
-                                        type: "submit",
-                                        disabled: submitting,
-                                    },
-                                    submitting
-                                        ? "Submitting\u2026"
-                                        : "Submit request",
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    "span",
-                                    { className: "helper" },
-                                    "After submission, your request will be visible in the progress tracker.",
-                                ),
-                            ),
-                        ),
-                    );
-                }
-                function FormSection({ title, children }) {
-                    return /* @__PURE__ */ React.createElement(
-                        React.Fragment,
-                        null,
-                        /* @__PURE__ */ React.createElement(
-                            "h3",
-                            { className: "section-title" },
-                            title,
-                        ),
-                        /* @__PURE__ */ React.createElement(
-                            "div",
-                            { className: "form-grid" },
-                            children,
-                        ),
-                    );
-                }
-                function Input({
-                    label,
-                    helper,
-                    name,
-                    value,
-                    onChange,
-                    required,
-                    type = "text",
-                    className = "",
-                }) {
-                    return /* @__PURE__ */ React.createElement(
-                        "div",
-                        { className: `field ${className}` },
-                        /* @__PURE__ */ React.createElement(
-                            "label",
-                            { htmlFor: name },
-                            label,
-                            " ",
-                            required &&
-                                /* @__PURE__ */ React.createElement(
-                                    "span",
-                                    { className: "required" },
-                                    "*",
-                                ),
-                        ),
-                        /* @__PURE__ */ React.createElement("input", {
-                            id: name,
-                            name,
-                            type,
-                            value,
-                            required,
-                            onChange: (event) =>
-                                onChange(name, event.target.value),
-                        }),
-                        helper &&
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                { className: "helper" },
-                                helper,
-                            ),
-                    );
-                }
-                function Textarea({
-                    label,
-                    helper,
-                    name,
-                    value,
-                    onChange,
-                    required,
-                    className = "",
-                }) {
-                    return /* @__PURE__ */ React.createElement(
-                        "div",
-                        { className: `field ${className}` },
-                        /* @__PURE__ */ React.createElement(
-                            "label",
-                            { htmlFor: name },
-                            label,
-                            " ",
-                            required &&
-                                /* @__PURE__ */ React.createElement(
-                                    "span",
-                                    { className: "required" },
-                                    "*",
-                                ),
-                        ),
-                        /* @__PURE__ */ React.createElement("textarea", {
-                            id: name,
-                            name,
-                            value,
-                            required,
-                            onChange: (event) =>
-                                onChange(name, event.target.value),
-                        }),
-                        helper &&
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                { className: "helper" },
-                                helper,
-                            ),
-                    );
-                }
-                function Select({
-                    label,
-                    helper,
-                    name,
-                    value,
-                    onChange,
-                    options,
-                    required,
-                }) {
-                    return /* @__PURE__ */ React.createElement(
-                        "div",
-                        { className: "field" },
-                        /* @__PURE__ */ React.createElement(
-                            "label",
-                            { htmlFor: name },
-                            label,
-                            " ",
-                            required &&
-                                /* @__PURE__ */ React.createElement(
-                                    "span",
-                                    { className: "required" },
-                                    "*",
-                                ),
-                        ),
-                        /* @__PURE__ */ React.createElement(
-                            "select",
-                            {
-                                id: name,
-                                name,
-                                value,
-                                required,
-                                onChange: (event) =>
-                                    onChange(name, event.target.value),
-                            },
-                            options.map((option) =>
-                                /* @__PURE__ */ React.createElement(
-                                    "option",
-                                    { key: option, value: option },
-                                    option,
-                                ),
-                            ),
-                        ),
-                        helper &&
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                { className: "helper" },
-                                helper,
-                            ),
-                    );
-                }
-                function Tracker({
-                    loading,
-                    requests,
-                    allRequests,
-                    query,
-                    setQuery,
-                    statusFilter,
-                    setStatusFilter,
-                    priorityFilter,
-                    setPriorityFilter,
-                    onRefresh,
-                    onSelect,
-                }) {
-                    const statuses = [
-                        "All",
-                        "Submitted",
-                        "Approved",
-                        "Rejected",
-                        "MVP",
-                        "Done",
-                        "Backlog",
-                    ];
-                    const priorities = ["All", "Low", "Medium", "High"];
-                    return /* @__PURE__ */ React.createElement(
-                        "section",
-                        {
-                            className: "panel",
-                            "aria-labelledby": "tracker-title",
-                        },
-                        /* @__PURE__ */ React.createElement(
-                            "div",
-                            { className: "panel-header" },
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                null,
-                                /* @__PURE__ */ React.createElement(
-                                    "h2",
-                                    { id: "tracker-title" },
-                                    "Public progress tracker",
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    "p",
-                                    null,
-                                    "Everyone with access to this web app can view submitted requests and current MAD Labs progress.",
-                                ),
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                "button",
-                                {
-                                    className: "btn btn-outline",
-                                    onClick: onRefresh,
-                                },
-                                "Refresh",
-                            ),
-                        ),
-                        /* @__PURE__ */ React.createElement(
-                            "div",
-                            { className: "toolbar" },
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                { className: "toolbar-controls" },
-                                /* @__PURE__ */ React.createElement("input", {
-                                    "aria-label": "Search requests",
-                                    placeholder:
-                                        "Search by ID, title, requester\u2026",
-                                    value: query,
-                                    onChange: (event) =>
-                                        setQuery(event.target.value),
-                                }),
-                                /* @__PURE__ */ React.createElement(
-                                    "select",
-                                    {
-                                        "aria-label": "Filter by status",
-                                        value: statusFilter,
-                                        onChange: (event) =>
-                                            setStatusFilter(event.target.value),
-                                    },
-                                    statuses.map((status) =>
-                                        /* @__PURE__ */ React.createElement(
-                                            "option",
-                                            { key: status },
-                                            status,
-                                        ),
-                                    ),
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    "select",
-                                    {
-                                        "aria-label": "Filter by priority",
-                                        value: priorityFilter,
-                                        onChange: (event) =>
-                                            setPriorityFilter(
-                                                event.target.value,
-                                            ),
-                                    },
-                                    priorities.map((priority) =>
-                                        /* @__PURE__ */ React.createElement(
-                                            "option",
-                                            { key: priority },
-                                            priority,
-                                        ),
-                                    ),
-                                ),
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                "span",
-                                { className: "helper" },
-                                "Showing ",
-                                requests.length,
-                                " of",
-                                " ",
-                                allRequests.length,
-                                " requests",
-                            ),
-                        ),
-                        loading
-                            ? /* @__PURE__ */ React.createElement(
-                                  "div",
-                                  { className: "loading" },
-                                  "Loading requests\u2026",
-                              )
-                            : requests.length === 0
-                              ? /* @__PURE__ */ React.createElement(
-                                    "div",
-                                    { className: "empty-state" },
-                                    /* @__PURE__ */ React.createElement(
-                                        "h3",
-                                        null,
-                                        "No requests found",
-                                    ),
-                                    /* @__PURE__ */ React.createElement(
-                                        "p",
-                                        null,
-                                        "Try adjusting the filters or submit the first solution request.",
-                                    ),
-                                )
-                              : /* @__PURE__ */ React.createElement(
-                                    "div",
-                                    { className: "requests-grid" },
-                                    requests.map((request) =>
-                                        /* @__PURE__ */ React.createElement(
-                                            RequestCard,
-                                            {
-                                                key: request.id,
-                                                request,
-                                                onSelect,
-                                            },
-                                        ),
-                                    ),
-                                ),
-                    );
-                }
-                function RequestCard({ request, onSelect }) {
-                    return /* @__PURE__ */ React.createElement(
-                        "article",
-                        { className: "request-card" },
-                        /* @__PURE__ */ React.createElement(
-                            "div",
-                            { className: "request-card-header" },
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                null,
-                                /* @__PURE__ */ React.createElement(
-                                    "div",
-                                    { className: "pill-row" },
-                                    /* @__PURE__ */ React.createElement(
-                                        "span",
-                                        { className: "pill" },
-                                        request.id,
-                                    ),
-                                    /* @__PURE__ */ React.createElement(
-                                        StatusPill,
-                                        { status: request.status },
-                                    ),
-                                    /* @__PURE__ */ React.createElement(
-                                        PriorityPill,
-                                        { priority: request.priority },
-                                    ),
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    "h3",
-                                    null,
-                                    request.requestTitle,
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    "div",
-                                    { className: "request-meta" },
-                                    /* @__PURE__ */ React.createElement(
-                                        "span",
-                                        null,
-                                        request.department,
-                                    ),
-                                    /* @__PURE__ */ React.createElement(
-                                        "span",
-                                        null,
-                                        "\xB7",
-                                    ),
-                                    /* @__PURE__ */ React.createElement(
-                                        "span",
-                                        null,
-                                        "Requested by ",
-                                        request.requesterName,
-                                    ),
-                                    /* @__PURE__ */ React.createElement(
-                                        "span",
-                                        null,
-                                        "\xB7",
-                                    ),
-                                    /* @__PURE__ */ React.createElement(
-                                        "span",
-                                        null,
-                                        request.dateOfRequest,
-                                    ),
-                                ),
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                "button",
-                                {
-                                    className: "btn btn-soft",
-                                    onClick: () => onSelect(request),
-                                },
-                                "View details",
-                            ),
-                        ),
-                        /* @__PURE__ */ React.createElement(
-                            "p",
-                            null,
-                            truncate(request.problemStatement, 220),
-                        ),
-                        /* @__PURE__ */ React.createElement(
-                            "div",
-                            { className: "status-line" },
-                            /* @__PURE__ */ React.createElement(
-                                "strong",
-                                null,
-                                "Progress:",
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                "span",
-                                null,
-                                getProgressLabel(request.status),
-                            ),
-                            request.lastUpdated &&
-                                /* @__PURE__ */ React.createElement(
-                                    "span",
-                                    { className: "helper" },
-                                    "Last updated ",
-                                    request.lastUpdated,
-                                ),
-                        ),
-                        /* @__PURE__ */ React.createElement(ProgressBar, {
-                            status: request.status,
-                        }),
-                    );
-                }
-                function StatusPill({ status }) {
-                    const isRejected = status === "Rejected";
-                    const isTerminal = terminalStatuses.includes(status);
-                    return /* @__PURE__ */ React.createElement(
-                        "span",
-                        {
-                            className: `pill ${isRejected ? "red" : isTerminal ? "gold" : ""}`,
-                        },
-                        status || "Submitted",
-                    );
-                }
-                function PriorityPill({ priority }) {
-                    return /* @__PURE__ */ React.createElement(
-                        "span",
-                        {
-                            className: `pill ${priority === "High" ? "gold" : ""}`,
-                        },
-                        priority || "Medium",
-                        " Priority",
-                    );
-                }
-                function ProgressBar({ status }) {
-                    const statusAliases = {
-                        Reviewing: "Submitted",
-                        "In Progress": "MVP",
-                        Completed: "Done",
-                    };
-                    const safeStatus =
-                        statusAliases[status] || status || "Submitted";
-                    const activeIndex = progressOrder.indexOf(safeStatus);
-                    const isBacklog = safeStatus === "Backlog";
-                    const isRejected = safeStatus === "Rejected";
-                    const filled =
-                        activeIndex >= 0
-                            ? activeIndex + 1
-                            : isBacklog || isRejected
-                              ? 2
-                              : 1;
-                    return /* @__PURE__ */ React.createElement(
-                        "div",
-                        {
-                            className: "progress",
-                            "aria-label": `Progress status: ${safeStatus}`,
-                        },
-                        progressOrder.map((step, index) =>
-                            /* @__PURE__ */ React.createElement("div", {
-                                key: step,
-                                title: step,
-                                className: `progress-step ${index < filled ? "done" : ""} ${isBacklog && index < filled ? "warning" : ""} ${isRejected && index < filled ? "rejected" : ""}`,
-                            }),
-                        ),
-                    );
-                }
-                function AdminPanel({
-                    requests,
-                    allRequests,
-                    query,
-                    setQuery,
-                    statusFilter,
-                    setStatusFilter,
-                    priorityFilter,
-                    setPriorityFilter,
-                    onRefresh,
-                    onUpdated,
-                    userEmail,
-                }) {
-                    const [selected, setSelected] = useState(null);
-                    return /* @__PURE__ */ React.createElement(
-                        "section",
-                        { className: "panel", "aria-labelledby": "admin-title" },
-                        /* @__PURE__ */ React.createElement(
-                            "div",
-                            { className: "panel-header" },
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                null,
-                                /* @__PURE__ */ React.createElement("span", { className: "kicker" }, "Admin only"),
-                                /* @__PURE__ */ React.createElement("h2", { id: "admin-title" }, "Submission review"),
-                                /* @__PURE__ */ React.createElement("p", null, "Signed in as ", userEmail, ". Update the review fields and publish progress for everyone.")
-                            ),
-                            /* @__PURE__ */ React.createElement("button", { className: "btn btn-outline", onClick: onRefresh }, "Refresh")
-                        ),
-                        /* @__PURE__ */ React.createElement(
-                            "div",
-                            { className: "toolbar" },
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                { className: "toolbar-controls" },
-                                /* @__PURE__ */ React.createElement("input", { "aria-label": "Search submissions", placeholder: "Search submissions…", value: query, onChange: (event) => setQuery(event.target.value) }),
-                                /* @__PURE__ */ React.createElement("select", { "aria-label": "Filter by status", value: statusFilter, onChange: (event) => setStatusFilter(event.target.value) }, ["All", "Submitted", "Approved", "Rejected", "MVP", "Done", "Backlog"].map((status) => /* @__PURE__ */ React.createElement("option", { key: status }, status))),
-                                /* @__PURE__ */ React.createElement("select", { "aria-label": "Filter by priority", value: priorityFilter, onChange: (event) => setPriorityFilter(event.target.value) }, ["All", "Low", "Medium", "High"].map((priority) => /* @__PURE__ */ React.createElement("option", { key: priority }, priority)))
-                            ),
-                            /* @__PURE__ */ React.createElement("span", { className: "helper" }, "Showing ", requests.length, " of ", allRequests.length, " submissions")
-                        ),
-                        requests.length === 0
-                            ? /* @__PURE__ */ React.createElement("div", { className: "empty-state" }, "No submissions found.")
-                            : /* @__PURE__ */ React.createElement("div", { className: "requests-grid" }, requests.map((request) => /* @__PURE__ */ React.createElement(
-                                "article",
-                                { className: "request-card", key: request.id },
-                                /* @__PURE__ */ React.createElement("div", { className: "request-card-header" },
-                                    /* @__PURE__ */ React.createElement("div", null,
-                                        /* @__PURE__ */ React.createElement("div", { className: "pill-row" }, request.id, /* @__PURE__ */ React.createElement(StatusPill, { status: request.status }), /* @__PURE__ */ React.createElement(PriorityPill, { priority: request.priority })),
-                                        /* @__PURE__ */ React.createElement("h3", null, request.requestTitle),
-                                        /* @__PURE__ */ React.createElement("div", { className: "request-meta" }, request.department, " · ", request.requesterName)
-                                    ),
-                                    /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: () => setSelected(request) }, "Review")
-                                ),
-                                /* @__PURE__ */ React.createElement("p", null, truncate(request.problemStatement, 180))
-                            ))) ,
-                        selected && /* @__PURE__ */ React.createElement(AdminEditor, {
-                            request: selected,
-                            onClose: () => setSelected(null),
-                            onSaved: async () => {
-                                setSelected(null);
-                                await onUpdated();
-                            },
-                        })
-                    );
-                }
-                function AdminEditor({ request, onClose, onSaved }) {
-                    const [values, setValues] = useState({
-                        status: request.status || "Submitted",
-                        reviewedBy: request.reviewedBy || "",
-                        feasibility: request.feasibility || "",
-                        impactLevel: request.impactLevel || "",
-                        decision: request.decision || "",
-                        madLabsNotes: request.madLabsNotes || "",
-                    });
-                    const [saving, setSaving] = useState(false);
-                    const [error, setError] = useState("");
-                    function update(name, value) {
-                        setValues((current) => ({ ...current, [name]: value }));
-                    }
-                    async function save() {
-                        setSaving(true);
-                        setError("");
-                        try {
-                            await runServer("updateRequest", request.id, values);
-                            await onSaved();
-                        } catch (err) {
-                            setError(err.message || "Could not save review.");
-                        } finally {
-                            setSaving(false);
-                        }
-                    }
-                    return /* @__PURE__ */ React.createElement("div", { className: "modal-backdrop", role: "presentation", onMouseDown: (event) => event.target === event.currentTarget && onClose() },
-                        /* @__PURE__ */ React.createElement("section", { className: "modal-card", role: "dialog", "aria-modal": "true", "aria-labelledby": "admin-editor-title" },
-                            /* @__PURE__ */ React.createElement("div", { className: "panel-header" },
-                                /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "kicker" }, request.id), /* @__PURE__ */ React.createElement("h2", { id: "admin-editor-title" }, request.requestTitle)),
-                                /* @__PURE__ */ React.createElement("button", { className: "btn btn-outline", onClick: onClose }, "Close")
-                            ),
-                            /* @__PURE__ */ React.createElement("div", { className: "form-grid" },
-                                /* @__PURE__ */ React.createElement(Select, { label: "Status", name: "status", value: values.status, onChange: update, options: ["Submitted", "Approved", "Rejected", "MVP", "Done", "Backlog"] }),
-                                /* @__PURE__ */ React.createElement(Input, { label: "Reviewed by", name: "reviewedBy", value: values.reviewedBy, onChange: update }),
-                                /* @__PURE__ */ React.createElement(Select, { label: "Feasibility", name: "feasibility", value: values.feasibility, onChange: update, options: ["", "Easy", "Medium", "Complex"] }),
-                                /* @__PURE__ */ React.createElement(Select, { label: "Impact level", name: "impactLevel", value: values.impactLevel, onChange: update, options: ["", "Low", "Medium", "High"] }),
-                                /* @__PURE__ */ React.createElement(Select, { label: "Decision", name: "decision", value: values.decision, onChange: update, options: ["", "Approved", "Backlog", "Rejected"] }),
-                                /* @__PURE__ */ React.createElement(Textarea, { className: "full", label: "MAD Labs notes", name: "madLabsNotes", value: values.madLabsNotes, onChange: update })
-                            ),
-                            error && /* @__PURE__ */ React.createElement("div", { className: "alert error" }, error),
-                            /* @__PURE__ */ React.createElement("div", { className: "form-actions" }, /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: save, disabled: saving }, saving ? "Saving…" : "Save review"))
-                        )
-                    );
-                }
-                function RequestModal({ request, onClose }) {
-                    useEffect(() => {
-                        function handleKeyDown(event) {
-                            if (event.key === "Escape") onClose();
-                        }
-                        window.addEventListener("keydown", handleKeyDown);
-                        return () =>
-                            window.removeEventListener(
-                                "keydown",
-                                handleKeyDown,
-                            );
-                    }, [onClose]);
-                    return /* @__PURE__ */ React.createElement(
-                        "div",
-                        {
-                            className: "modal-backdrop",
-                            role: "presentation",
-                            onMouseDown: (event) =>
-                                event.target === event.currentTarget &&
-                                onClose(),
-                        },
-                        /* @__PURE__ */ React.createElement(
-                            "section",
-                            {
-                                className: "modal-card",
-                                role: "dialog",
-                                "aria-modal": "true",
-                                "aria-labelledby": "modal-title",
-                            },
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                { className: "panel-header" },
-                                /* @__PURE__ */ React.createElement(
-                                    "div",
-                                    null,
-                                    /* @__PURE__ */ React.createElement(
-                                        "span",
-                                        { className: "kicker" },
-                                        request.id,
-                                    ),
-                                    /* @__PURE__ */ React.createElement(
-                                        "h2",
-                                        { id: "modal-title" },
-                                        request.requestTitle,
-                                    ),
-                                    /* @__PURE__ */ React.createElement(
-                                        "div",
-                                        { className: "request-meta" },
-                                        /* @__PURE__ */ React.createElement(
-                                            "span",
-                                            null,
-                                            request.department,
-                                        ),
-                                        /* @__PURE__ */ React.createElement(
-                                            "span",
-                                            null,
-                                            "\xB7",
-                                        ),
-                                        /* @__PURE__ */ React.createElement(
-                                            "span",
-                                            null,
-                                            request.requesterName,
-                                        ),
-                                        /* @__PURE__ */ React.createElement(
-                                            "span",
-                                            null,
-                                            "\xB7",
-                                        ),
-                                        /* @__PURE__ */ React.createElement(
-                                            "span",
-                                            null,
-                                            request.dateOfRequest,
-                                        ),
-                                    ),
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    "button",
-                                    {
-                                        className: "btn btn-outline",
-                                        onClick: onClose,
-                                    },
-                                    "Close",
-                                ),
-                            ),
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                { className: "pill-row" },
-                                /* @__PURE__ */ React.createElement(
-                                    StatusPill,
-                                    { status: request.status },
-                                ),
-                                /* @__PURE__ */ React.createElement(
-                                    PriorityPill,
-                                    { priority: request.priority },
-                                ),
-                                request.deadline &&
-                                    /* @__PURE__ */ React.createElement(
-                                        "span",
-                                        { className: "pill gold" },
-                                        "Deadline ",
-                                        request.deadline,
-                                    ),
-                            ),
-                            /* @__PURE__ */ React.createElement(ProgressBar, {
-                                status: request.status,
-                            }),
-                            /* @__PURE__ */ React.createElement(
-                                "div",
-                                { className: "detail-grid" },
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Problem",
-                                    value: request.problemStatement,
-                                    full: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Why it matters",
-                                    value: request.impact,
-                                    full: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Current data",
-                                    value:
-                                        request.dataSources || "Not provided",
-                                    full: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Solution in mind",
-                                    value: request.hasSolution || "No",
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Proposed idea",
-                                    value:
-                                        request.proposedSolution ||
-                                        "Not provided",
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Reference / Example",
-                                    value: request.reference || "Not provided",
-                                    full: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Key features",
-                                    value: request.features.length
-                                        ? request.features
-                                              .map(
-                                                  (feature, index) =>
-                                                      `${index + 1}. ${feature}`,
-                                              )
-                                              .join("\n")
-                                        : "Not provided",
-                                    full: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Users",
-                                    value: request.users,
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Success criteria",
-                                    value: request.successCriteria,
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Additional notes",
-                                    value:
-                                        request.additionalNotes ||
-                                        "Not provided",
-                                    full: true,
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Reviewed by",
-                                    value: request.reviewedBy || "Pending",
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Feasibility",
-                                    value: request.feasibility || "Pending",
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Impact level",
-                                    value: request.impactLevel || "Pending",
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "Decision",
-                                    value: request.decision || "Pending",
-                                }),
-                                /* @__PURE__ */ React.createElement(Detail, {
-                                    label: "MAD Labs notes",
-                                    value:
-                                        request.madLabsNotes || "No notes yet",
-                                    full: true,
-                                }),
-                            ),
-                        ),
-                    );
-                }
-                function Detail({ label, value, full }) {
-                    return /* @__PURE__ */ React.createElement(
-                        "div",
-                        { className: `detail-item ${full ? "full" : ""}` },
-                        /* @__PURE__ */ React.createElement(
-                            "div",
-                            { className: "detail-label" },
-                            label,
-                        ),
-                        /* @__PURE__ */ React.createElement(
-                            "div",
-                            { className: "detail-value" },
-                            value,
-                        ),
-                    );
-                }
-                function truncate(value, length) {
-                    if (!value || value.length <= length) return value || "";
-                    return `${value.slice(0, length).trim()}\u2026`;
-                }
-                function getProgressLabel(status) {
-                    if (status === "Backlog")
-                        return "Accepted into backlog for future planning.";
-                    if (status === "Rejected")
-                        return "Reviewed and not approved at this time.";
-                    if (status === "Done" || status === "Completed")
-                        return "Solution completed.";
-                    if (status === "MVP" || status === "In Progress")
-                        return "MVP is being built, tested, or iterated.";
-                    if (status === "Approved")
-                        return "Approved and ready for MVP development.";
-                    if (status === "Reviewing")
-                        return "MAD Labs is reviewing feasibility and impact.";
-                    return "Submitted and waiting for MAD Labs review.";
-                }
-                ReactDOM.createRoot(document.getElementById("root")).render(
-                    /* @__PURE__ */ React.createElement(App, null),
+                return h("svg", { className, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true" },
+                    ...(paths[name] || paths.info).map((d, index) => h("path", { d, key: index }))
                 );
-            })();
-        </script>
-    </body>
+            }
+
+            function App() {
+                const [language, setLanguage] = useState(() => {
+                    try { return localStorage.getItem("mad-labs-language") || "en"; } catch (_) { return "en"; }
+                });
+                const t = translations[language] || translations.en;
+                const [activeTab, setActiveTab] = useState("submit");
+                const [isAdmin, setIsAdmin] = useState(false);
+                const [userEmail, setUserEmail] = useState("");
+                const [requests, setRequests] = useState([]);
+                const [loading, setLoading] = useState(true);
+                const [submitting, setSubmitting] = useState(false);
+                const [form, setForm] = useState(initialForm);
+                const [message, setMessage] = useState(null);
+                const [query, setQuery] = useState("");
+                const [statusFilter, setStatusFilter] = useState("All");
+                const [priorityFilter, setPriorityFilter] = useState("All");
+                const [selectedRequest, setSelectedRequest] = useState(null);
+
+                useEffect(() => { loadAppConfig(); loadRequests(); }, []);
+                useEffect(() => {
+                    document.documentElement.lang = language === "id" ? "id" : "en";
+                    try { localStorage.setItem("mad-labs-language", language); } catch (_) {}
+                }, [language]);
+
+                async function loadAppConfig() {
+                    try {
+                        const response = await runServer("getAppConfig");
+                        setIsAdmin(Boolean(response.isAdmin));
+                        setUserEmail(response.userEmail || "");
+                    } catch (error) { setMessage({ type: "error", text: error.message || t.identifyError }); }
+                }
+                async function loadRequests() {
+                    setLoading(true);
+                    try {
+                        const response = await runServer("getRequests");
+                        setRequests(response.requests || []);
+                    } catch (error) { setMessage({ type: "error", text: error.message || t.loadError }); }
+                    finally { setLoading(false); }
+                }
+                function updateField(name, value) { setForm(current => ({ ...current, [name]: value })); }
+                async function handleSubmit(event) {
+                    event.preventDefault(); setSubmitting(true); setMessage(null);
+                    try {
+                        const response = await runServer("submitRequest", form);
+                        setMessage({ type: "success", text: format(t.successSubmit, { id: response.requestId }) });
+                        setForm({ ...initialForm, dateOfRequest: new Date().toISOString().slice(0, 10) });
+                        await loadRequests(); setActiveTab("track");
+                    } catch (error) { setMessage({ type: "error", text: error.message || t.submitError }); }
+                    finally { setSubmitting(false); }
+                }
+                const filteredRequests = useMemo(() => {
+                    const normalized = query.trim().toLowerCase();
+                    return requests.filter(request => {
+                        const matchesQuery = !normalized || [request.id, request.requestTitle, request.department, request.requesterName, request.problemStatement, request.users].join(" ").toLowerCase().includes(normalized);
+                        return matchesQuery && (statusFilter === "All" || request.status === statusFilter) && (priorityFilter === "All" || request.priority === priorityFilter);
+                    });
+                }, [requests, query, statusFilter, priorityFilter]);
+                const stats = useMemo(() => ({
+                    total: requests.length,
+                    reviewing: requests.filter(r => ["Submitted", "Reviewing"].includes(r.status)).length,
+                    active: requests.filter(r => ["Approved", "MVP", "In Progress"].includes(r.status)).length,
+                    completed: requests.filter(r => ["Done", "Completed"].includes(r.status)).length
+                }), [requests]);
+                const changeTab = tab => { setActiveTab(tab); window.setTimeout(() => document.getElementById("workspace")?.scrollIntoView({ behavior: "smooth", block: "start" }), 30); };
+
+                return h("main", { className: "app-shell" },
+                    h(Topbar, { language, setLanguage, t }),
+                    h(Hero, { stats, t, changeTab }),
+                    h("div", { className: "workspace", id: "workspace" },
+                        h(Sidebar, { activeTab, changeTab, isAdmin, t }),
+                        h("div", { className: "content" },
+                            message && h("div", { className: `alert ${message.type === "error" ? "error" : ""}`, role: "status" }, h(Icon, { name: message.type === "error" ? "info" : "check" }), h("span", null, message.text)),
+                            activeTab === "submit"
+                                ? h(RequestForm, { form, updateField, onSubmit: handleSubmit, submitting, t })
+                                : activeTab === "admin" && isAdmin
+                                    ? h(AdminPanel, { requests: filteredRequests, allRequests: requests, query, setQuery, statusFilter, setStatusFilter, priorityFilter, setPriorityFilter, onRefresh: loadRequests, onUpdated: loadRequests, userEmail, t })
+                                    : h(Tracker, { loading, requests: filteredRequests, allRequests: requests, query, setQuery, statusFilter, setStatusFilter, priorityFilter, setPriorityFilter, onRefresh: loadRequests, onSelect: setSelectedRequest, t })
+                        )
+                    ),
+                    selectedRequest && h(RequestModal, { request: selectedRequest, onClose: () => setSelectedRequest(null), t })
+                );
+            }
+
+            function Topbar({ language, setLanguage, t }) {
+                return h("header", { className: "topbar" },
+                    h("div", { className: "brand" },
+                        h("div", { className: "brand-mark" }, h(Icon, { name: "leaf" })),
+                        h("div", { className: "brand-copy" }, h("strong", null, "MAD Labs"), h("span", null, t.brandSub))
+                    ),
+                    h("div", { className: "topbar-actions" },
+                        h("div", { className: "language-picker", role: "group", "aria-label": t.language },
+                            h("button", { className: `language-option ${language === "en" ? "active" : ""}`, onClick: () => setLanguage("en"), "aria-pressed": language === "en" }, "EN"),
+                            h("button", { className: `language-option ${language === "id" ? "active" : ""}`, onClick: () => setLanguage("id"), "aria-pressed": language === "id" }, "ID")
+                        )
+                    )
+                );
+            }
+            function Hero({ stats, t, changeTab }) {
+                return h("section", { className: "hero", "aria-labelledby": "page-title" },
+                    h("div", { className: "hero-main" },
+                        h("span", { className: "eyebrow" }, h("span", { className: "eyebrow-dot" }), t.heroKicker),
+                        h("h1", { id: "page-title" }, t.heroTitle),
+                        h("p", { className: "hero-description" }, t.heroDescription),
+                        h("div", { className: "hero-actions" },
+                            h("button", { className: "btn btn-gold", onClick: () => changeTab("submit") }, t.heroSubmit, h(Icon, { name: "arrow" })),
+                            h("button", { className: "btn btn-light", onClick: () => changeTab("track") }, h(Icon, { name: "chart" }), t.heroTrack)
+                        )
+                    ),
+                    h("aside", { className: "hero-aside", "aria-label": t.overview },
+                        h("div", { className: "overview-card" },
+                            h("div", { className: "overview-head" }, h("strong", null, t.overview), h("span", { className: "live-badge" }, t.live)),
+                            h("div", { className: "stat-grid" },
+                                h(Stat, { value: stats.total, label: t.statTotal }), h(Stat, { value: stats.reviewing, label: t.statReview }),
+                                h(Stat, { value: stats.active, label: t.statActive }), h(Stat, { value: stats.completed, label: t.statDone })
+                            )
+                        )
+                    )
+                );
+            }
+            function Stat({ value, label }) { return h("div", { className: "stat" }, h("strong", null, value), h("span", null, label)); }
+            function Sidebar({ activeTab, changeTab, isAdmin, t }) {
+                const tab = (id, icon, label) => h("button", { className: `tab ${activeTab === id ? "active" : ""}`, onClick: () => changeTab(id), "aria-current": activeTab === id ? "page" : undefined }, h(Icon, { name: icon }), label);
+                return h("nav", { className: "sidebar", "aria-label": t.navLabel },
+                    h("div", { className: "nav-label" }, t.navLabel), tab("submit", "form", t.navSubmit), tab("track", "chart", t.navTracker),
+                    isAdmin && tab("admin", "shield", t.navAdmin), h("div", { className: "sidebar-note" }, t.navNote)
+                );
+            }
+
+            function PanelHeader({ icon, title, description, action, adminLabel }) {
+                return h("div", { className: "panel-header" },
+                    h("div", { className: "panel-heading" }, h("div", { className: "heading-icon" }, h(Icon, { name: icon })),
+                        h("div", null, adminLabel && h("span", { className: "admin-chip" }, adminLabel), h("h2", null, title), h("p", null, description))
+                    ), action
+                );
+            }
+            function RequestForm({ form, updateField, onSubmit, submitting, t }) {
+                return h("section", { className: "panel", "aria-labelledby": "form-title" },
+                    h(PanelHeader, { icon: "form", title: t.formTitle, description: t.formDescription }),
+                    h("form", { onSubmit },
+                        h(FormSection, { number: "01", title: t.sectionOverview },
+                            h(Input, { label: t.requestTitle, name: "requestTitle", value: form.requestTitle, onChange: updateField, required: true }),
+                            h(Input, { label: t.department, name: "department", value: form.department, onChange: updateField, required: true }),
+                            h(Input, { label: t.requesterName, name: "requesterName", value: form.requesterName, onChange: updateField, required: true }),
+                            h(Input, { label: t.dateOfRequest, name: "dateOfRequest", type: "date", value: form.dateOfRequest, onChange: updateField, required: true })
+                        ),
+                        h(FormSection, { number: "02", title: t.sectionProblem },
+                            h(Textarea, { className: "full", label: t.problemQuestion, helper: t.problemHelper, name: "problemStatement", value: form.problemStatement, onChange: updateField, required: true }),
+                            h(Textarea, { className: "full", label: t.impactQuestion, helper: t.impactHelper, name: "impact", value: form.impact, onChange: updateField, required: true }),
+                            h(Textarea, { className: "full", label: t.dataQuestion, helper: t.dataHelper, name: "dataSources", value: form.dataSources, onChange: updateField })
+                        ),
+                        h(FormSection, { number: "03", title: t.sectionIdea },
+                            h(Select, { label: t.hasSolution, name: "hasSolution", value: form.hasSolution, onChange: updateField, options: [{ value: "No", label: t.no }, { value: "Yes", label: t.yes }] }),
+                            h(Textarea, { label: t.proposedSolution, helper: t.proposedHelper, name: "proposedSolution", value: form.proposedSolution, onChange: updateField }),
+                            h(Textarea, { className: "full", label: t.reference, helper: t.referenceHelper, name: "reference", value: form.reference, onChange: updateField })
+                        ),
+                        h(FormSection, { number: "04", title: t.sectionRequirements },
+                            h(Input, { label: t.feature1, name: "feature1", value: form.feature1, onChange: updateField }),
+                            h(Input, { label: t.feature2, name: "feature2", value: form.feature2, onChange: updateField }),
+                            h(Input, { label: t.feature3, name: "feature3", value: form.feature3, onChange: updateField }),
+                            h(Input, { label: t.users, helper: t.usersHelper, name: "users", value: form.users, onChange: updateField, required: true }),
+                            h(Textarea, { className: "full", label: t.success, helper: t.successHelper, name: "successCriteria", value: form.successCriteria, onChange: updateField, required: true })
+                        ),
+                        h(FormSection, { number: "05", title: t.sectionTimeline },
+                            h(Select, { label: t.priority, name: "priority", value: form.priority, onChange: updateField, options: priorityOptions(t), required: true }),
+                            h(Input, { label: t.deadline, name: "deadline", type: "date", value: form.deadline, onChange: updateField }),
+                            h(Textarea, { className: "full", label: t.notes, helper: t.notesHelper, name: "additionalNotes", value: form.additionalNotes, onChange: updateField })
+                        ),
+                        h("div", { className: "form-actions" },
+                            h("button", { className: "btn btn-primary", type: "submit", disabled: submitting }, submitting ? t.submitting : t.submit, !submitting && h(Icon, { name: "arrow" })),
+                            h("span", { className: "helper" }, t.submitNote)
+                        )
+                    )
+                );
+            }
+            function FormSection({ number, title, children }) {
+                return h(React.Fragment, null, h("h3", { className: "section-title" }, h("span", { className: "section-number" }, number), title), h("div", { className: "form-grid" }, children));
+            }
+            function FieldLabel({ name, label, required }) { return h("label", { htmlFor: name }, label, required && h("span", { className: "required" }, " *")); }
+            function Input({ label, helper, name, value, onChange, required, type = "text", className = "" }) {
+                return h("div", { className: `field ${className}` }, h(FieldLabel, { name, label, required }), h("input", { id: name, name, type, value, required, onChange: e => onChange(name, e.target.value) }), helper && h("div", { className: "helper" }, helper));
+            }
+            function Textarea({ label, helper, name, value, onChange, required, className = "" }) {
+                return h("div", { className: `field ${className}` }, h(FieldLabel, { name, label, required }), h("textarea", { id: name, name, value, required, onChange: e => onChange(name, e.target.value) }), helper && h("div", { className: "helper" }, helper));
+            }
+            function Select({ label, helper, name, value, onChange, options, required }) {
+                return h("div", { className: "field" }, h(FieldLabel, { name, label, required }), h("select", { id: name, name, value, required, onChange: e => onChange(name, e.target.value) },
+                    options.map(option => { const item = typeof option === "string" ? { value: option, label: option } : option; return h("option", { key: item.value, value: item.value }, item.label); })
+                ), helper && h("div", { className: "helper" }, helper));
+            }
+
+            function Tracker({ loading, requests, allRequests, query, setQuery, statusFilter, setStatusFilter, priorityFilter, setPriorityFilter, onRefresh, onSelect, t }) {
+                return h("section", { className: "panel", "aria-labelledby": "tracker-title" },
+                    h(PanelHeader, { icon: "chart", title: t.trackerTitle, description: t.trackerDescription, action: h("button", { className: "btn btn-outline", onClick: onRefresh }, h(Icon, { name: "refresh" }), t.refresh) }),
+                    h(FilterToolbar, { query, setQuery, statusFilter, setStatusFilter, priorityFilter, setPriorityFilter, shown: requests.length, total: allRequests.length, t, admin: false }),
+                    loading ? h("div", { className: "loading" }, t.loading)
+                        : requests.length === 0 ? h(EmptyState, { t })
+                        : h("div", { className: "requests-grid" }, requests.map(request => h(RequestCard, { key: request.id, request, onSelect, t })))
+                );
+            }
+            function FilterToolbar({ query, setQuery, statusFilter, setStatusFilter, priorityFilter, setPriorityFilter, shown, total, t, admin }) {
+                return h("div", { className: "toolbar" },
+                    h("div", { className: "toolbar-controls" },
+                        h("input", { "aria-label": t.searchAria, placeholder: admin ? t.searchSubmissions : t.search, value: query, onChange: e => setQuery(e.target.value) }),
+                        h("select", { "aria-label": t.filterStatus, value: statusFilter, onChange: e => setStatusFilter(e.target.value) }, statusOptions(t, true).map(item => h("option", { key: item.value, value: item.value }, item.label))),
+                        h("select", { "aria-label": t.filterPriority, value: priorityFilter, onChange: e => setPriorityFilter(e.target.value) }, priorityOptions(t, true).map(item => h("option", { key: item.value, value: item.value }, item.label)))
+                    ),
+                    h("span", { className: "result-count" }, format(admin ? t.showingSubmissions : t.showing, { shown, total }))
+                );
+            }
+            function EmptyState({ t }) { return h("div", { className: "empty-state" }, h("div", { className: "empty-icon" }, h(Icon, { name: "inbox" })), h("h3", null, t.emptyTitle), h("p", null, t.emptyDescription)); }
+            function RequestCard({ request, onSelect, t }) {
+                return h("article", { className: "request-card" },
+                    h("div", { className: "request-card-header" },
+                        h("div", null,
+                            h("div", { className: "pill-row" }, h("span", { className: "pill neutral" }, request.id), h(StatusPill, { status: request.status, t }), h(PriorityPill, { priority: request.priority, t })),
+                            h("h3", null, request.requestTitle),
+                            h("div", { className: "request-meta" }, h("span", null, request.department), h("span", { className: "meta-dot" }, "•"), h("span", null, `${t.requestedBy} ${request.requesterName}`), h("span", { className: "meta-dot" }, "•"), h("span", null, request.dateOfRequest))
+                        ),
+                        h("button", { className: "btn btn-soft", onClick: () => onSelect(request) }, t.viewDetails, h(Icon, { name: "arrow" }))
+                    ),
+                    h("p", null, truncate(request.problemStatement, 220)),
+                    h("div", { className: "status-line" }, h("strong", null, `${t.progress}:`), h("span", null, getProgressLabel(request.status, t)), request.lastUpdated && h("span", { className: "helper" }, `${t.lastUpdated} ${request.lastUpdated}`)),
+                    h(ProgressBar, { status: request.status, t })
+                );
+            }
+            function StatusPill({ status, t }) {
+                const safe = status || "Submitted";
+                return h("span", { className: `pill ${safe === "Rejected" ? "red" : terminalStatuses.includes(safe) ? "gold" : ""}` }, translateValue(safe, t));
+            }
+            function PriorityPill({ priority, t }) { const safe = priority || "Medium"; return h("span", { className: `pill ${safe === "High" ? "gold" : ""}` }, `${translateValue(safe, t)} ${t.prioritySuffix}`); }
+            function ProgressBar({ status, t }) {
+                const aliases = { Reviewing: "Submitted", "In Progress": "MVP", Completed: "Done" };
+                const safe = aliases[status] || status || "Submitted";
+                const activeIndex = progressOrder.indexOf(safe), isBacklog = safe === "Backlog", isRejected = safe === "Rejected";
+                const filled = activeIndex >= 0 ? activeIndex + 1 : (isBacklog || isRejected ? 2 : 1);
+                return h("div", { className: "progress", "aria-label": `${t.progress}: ${translateValue(safe, t)}` }, progressOrder.map((step, index) => h("div", { key: step, title: translateValue(step, t), className: `progress-step ${index < filled ? "done" : ""} ${isBacklog && index < filled ? "warning" : ""} ${isRejected && index < filled ? "rejected" : ""}` })));
+            }
+
+            function AdminPanel({ requests, allRequests, query, setQuery, statusFilter, setStatusFilter, priorityFilter, setPriorityFilter, onRefresh, onUpdated, userEmail, t }) {
+                const [selected, setSelected] = useState(null);
+                return h("section", { className: "panel", "aria-labelledby": "admin-title" },
+                    h(PanelHeader, { icon: "shield", adminLabel: t.adminOnly, title: t.adminTitle, description: format(t.adminDescription, { email: userEmail }), action: h("button", { className: "btn btn-outline", onClick: onRefresh }, h(Icon, { name: "refresh" }), t.refresh) }),
+                    h(FilterToolbar, { query, setQuery, statusFilter, setStatusFilter, priorityFilter, setPriorityFilter, shown: requests.length, total: allRequests.length, t, admin: true }),
+                    requests.length === 0 ? h("div", { className: "empty-state" }, t.noSubmissions)
+                        : h("div", { className: "requests-grid" }, requests.map(request => h("article", { className: "request-card", key: request.id },
+                            h("div", { className: "request-card-header" },
+                                h("div", null, h("div", { className: "pill-row" }, h("span", { className: "pill neutral" }, request.id), h(StatusPill, { status: request.status, t }), h(PriorityPill, { priority: request.priority, t })), h("h3", null, request.requestTitle), h("div", { className: "request-meta" }, request.department, " · ", request.requesterName)),
+                                h("button", { className: "btn btn-primary", onClick: () => setSelected(request) }, h(Icon, { name: "shield" }), t.review)
+                            ), h("p", null, truncate(request.problemStatement, 180))
+                        ))),
+                    selected && h(AdminEditor, { request: selected, onClose: () => setSelected(null), onSaved: async () => { setSelected(null); await onUpdated(); }, t })
+                );
+            }
+            function AdminEditor({ request, onClose, onSaved, t }) {
+                const [values, setValues] = useState({ status: request.status || "Submitted", reviewedBy: request.reviewedBy || "", feasibility: request.feasibility || "", impactLevel: request.impactLevel || "", decision: request.decision || "", madLabsNotes: request.madLabsNotes || "" });
+                const [saving, setSaving] = useState(false), [error, setError] = useState("");
+                const update = (name, value) => setValues(current => ({ ...current, [name]: value }));
+                async function save() { setSaving(true); setError(""); try { await runServer("updateRequest", request.id, values); await onSaved(); } catch (err) { setError(err.message || t.saveError); } finally { setSaving(false); } }
+                useModalEscape(onClose);
+                return h("div", { className: "modal-backdrop", role: "presentation", onMouseDown: e => e.target === e.currentTarget && onClose() },
+                    h("section", { className: "modal-card", role: "dialog", "aria-modal": "true", "aria-labelledby": "admin-editor-title" },
+                        h("div", { className: "panel-header" }, h("div", null, h("span", { className: "admin-chip" }, request.id), h("h2", { id: "admin-editor-title" }, request.requestTitle)), h("button", { className: "btn btn-outline", onClick: onClose }, t.close)),
+                        h("div", { className: "form-grid" },
+                            h(Select, { label: t.status, name: "status", value: values.status, onChange: update, options: statusOptions(t) }),
+                            h(Input, { label: t.reviewedBy, name: "reviewedBy", value: values.reviewedBy, onChange: update }),
+                            h(Select, { label: t.feasibility, name: "feasibility", value: values.feasibility, onChange: update, options: [{ value: "", label: "—" }, { value: "Easy", label: t.easy }, { value: "Medium", label: t.medium }, { value: "Complex", label: t.complex }] }),
+                            h(Select, { label: t.impactLevel, name: "impactLevel", value: values.impactLevel, onChange: update, options: [{ value: "", label: "—" }, ...priorityOptions(t)] }),
+                            h(Select, { label: t.decision, name: "decision", value: values.decision, onChange: update, options: [{ value: "", label: "—" }, { value: "Approved", label: t.approved }, { value: "Backlog", label: t.backlog }, { value: "Rejected", label: t.rejected }] }),
+                            h(Textarea, { className: "full", label: t.madNotes, name: "madLabsNotes", value: values.madLabsNotes, onChange: update })
+                        ),
+                        error && h("div", { className: "alert error" }, h(Icon, { name: "info" }), error),
+                        h("div", { className: "form-actions" }, h("button", { className: "btn btn-primary", onClick: save, disabled: saving }, saving ? t.saving : t.saveReview))
+                    )
+                );
+            }
+            function RequestModal({ request, onClose, t }) {
+                useModalEscape(onClose);
+                const features = request.features || [];
+                return h("div", { className: "modal-backdrop", role: "presentation", onMouseDown: e => e.target === e.currentTarget && onClose() },
+                    h("section", { className: "modal-card", role: "dialog", "aria-modal": "true", "aria-labelledby": "modal-title" },
+                        h("div", { className: "panel-header" },
+                            h("div", null, h("span", { className: "admin-chip" }, request.id), h("h2", { id: "modal-title" }, request.requestTitle), h("div", { className: "request-meta" }, request.department, h("span", { className: "meta-dot" }, "•"), request.requesterName, h("span", { className: "meta-dot" }, "•"), request.dateOfRequest)),
+                            h("button", { className: "btn btn-outline", onClick: onClose }, t.close)
+                        ),
+                        h("div", { className: "pill-row" }, h(StatusPill, { status: request.status, t }), h(PriorityPill, { priority: request.priority, t }), request.deadline && h("span", { className: "pill gold" }, `${t.deadlineLabel} ${request.deadline}`)),
+                        h(ProgressBar, { status: request.status, t }),
+                        h("div", { className: "detail-grid" },
+                            h(Detail, { label: t.detailsProblem, value: request.problemStatement, full: true }), h(Detail, { label: t.detailsImpact, value: request.impact, full: true }),
+                            h(Detail, { label: t.detailsData, value: request.dataSources || t.notProvided, full: true }), h(Detail, { label: t.detailsSolutionMind, value: translateValue(request.hasSolution || "No", t) }),
+                            h(Detail, { label: t.detailsIdea, value: request.proposedSolution || t.notProvided }), h(Detail, { label: t.detailsReference, value: request.reference || t.notProvided, full: true }),
+                            h(Detail, { label: t.detailsFeatures, value: features.length ? features.map((feature, index) => `${index + 1}. ${feature}`).join("\n") : t.notProvided, full: true }),
+                            h(Detail, { label: t.detailsUsers, value: request.users }), h(Detail, { label: t.detailsSuccess, value: request.successCriteria }),
+                            h(Detail, { label: t.detailsNotes, value: request.additionalNotes || t.notProvided, full: true }), h(Detail, { label: t.reviewedBy, value: request.reviewedBy || t.pending }),
+                            h(Detail, { label: t.feasibility, value: request.feasibility ? translateValue(request.feasibility, t) : t.pending }), h(Detail, { label: t.impactLevel, value: request.impactLevel ? translateValue(request.impactLevel, t) : t.pending }),
+                            h(Detail, { label: t.decision, value: request.decision ? translateValue(request.decision, t) : t.pending }), h(Detail, { label: t.madNotes, value: request.madLabsNotes || t.noNotes, full: true })
+                        )
+                    )
+                );
+            }
+            function Detail({ label, value, full }) { return h("div", { className: `detail-item ${full ? "full" : ""}` }, h("div", { className: "detail-label" }, label), h("div", { className: "detail-value" }, value)); }
+            function useModalEscape(onClose) { useEffect(() => { const handler = e => e.key === "Escape" && onClose(); window.addEventListener("keydown", handler); return () => window.removeEventListener("keydown", handler); }, [onClose]); }
+
+            function statusOptions(t, includeAll) {
+                const options = [{ value: "Submitted", label: t.submitted }, { value: "Approved", label: t.approved }, { value: "Rejected", label: t.rejected }, { value: "MVP", label: t.mvp }, { value: "Done", label: t.done }, { value: "Backlog", label: t.backlog }];
+                return includeAll ? [{ value: "All", label: t.all }, ...options] : options;
+            }
+            function priorityOptions(t, includeAll) {
+                const options = [{ value: "Low", label: t.low }, { value: "Medium", label: t.medium }, { value: "High", label: t.high }];
+                return includeAll ? [{ value: "All", label: t.all }, ...options] : options;
+            }
+            function translateValue(value, t) {
+                const keys = { Yes: "yes", No: "no", All: "all", Low: "low", Medium: "medium", High: "high", Easy: "easy", Complex: "complex", Submitted: "submitted", Reviewing: "submitted", Approved: "approved", Rejected: "rejected", MVP: "mvp", "In Progress": "mvp", Done: "done", Completed: "done", Backlog: "backlog" };
+                return t[keys[value]] || value;
+            }
+            function getProgressLabel(status, t) {
+                if (status === "Backlog") return t.progressBacklog;
+                if (status === "Rejected") return t.progressRejected;
+                if (status === "Done" || status === "Completed") return t.progressDone;
+                if (status === "MVP" || status === "In Progress") return t.progressMvp;
+                if (status === "Approved") return t.progressApproved;
+                if (status === "Reviewing") return t.progressReviewing;
+                return t.progressSubmitted;
+            }
+            function truncate(value, length) { if (!value || value.length <= length) return value || ""; return `${value.slice(0, length).trim()}…`; }
+
+            ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+        })();
+    </script>
+</body>
 </html>
