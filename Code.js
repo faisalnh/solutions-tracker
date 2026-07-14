@@ -1,5 +1,6 @@
 const SHEET_NAME = "Solution Requests";
 const SPREADSHEET_NAME = "MAD Labs Solution Requests";
+const ADMIN_EMAIL_PROPERTY = "ADMIN_EMAIL";
 
 const HEADERS = [
   "Request ID",
@@ -54,6 +55,31 @@ function doGet() {
     .addMetaTag("viewport", "width=device-width, initial-scale=1");
 }
 
+/**
+ * Run this once from the Apps Script editor while signed in as the admin.
+ * The deployment must execute as the accessing user for Session.getActiveUser()
+ * to identify the person opening the web app.
+ */
+function setupAdmin_() {
+  const email = getActiveUserEmail_();
+  if (!email) {
+    throw new Error("Could not identify your Google account. Sign in and try again.");
+  }
+
+  PropertiesService.getScriptProperties().setProperty(ADMIN_EMAIL_PROPERTY, email);
+  return { ok: true, adminEmail: email };
+}
+
+function getAppConfig() {
+  const email = getActiveUserEmail_();
+  const adminEmail = getAdminEmail_();
+  return {
+    ok: true,
+    userEmail: email,
+    isAdmin: Boolean(email && adminEmail && email === adminEmail),
+  };
+}
+
 function submitRequest(formData) {
   const data = normalizeRequest_(formData || {});
   validateRequest_(data);
@@ -105,6 +131,58 @@ function submitRequest(formData) {
   } finally {
     lock.releaseLock();
   }
+}
+
+function updateRequest(requestId, updates) {
+  requireAdmin_();
+
+  const allowedFields = {
+    status: 21,
+    reviewedBy: 22,
+    feasibility: 23,
+    impactLevel: 24,
+    decision: 25,
+    madLabsNotes: 26,
+  };
+  const sheet = getSheet_();
+  const values = sheet.getDataRange().getValues();
+  let rowNumber = -1;
+
+  for (let i = 1; i < values.length; i++) {
+    if (String(values[i][0]) === String(requestId)) {
+      rowNumber = i + 1;
+      break;
+    }
+  }
+
+  if (rowNumber === -1) {
+    throw new Error("Request not found.");
+  }
+
+  Object.keys(allowedFields).forEach(function (field) {
+    if (Object.prototype.hasOwnProperty.call(updates || {}, field)) {
+      const value = cleanText_(updates[field]);
+      if (field === "status" && VALID_STATUSES.indexOf(value) === -1) {
+        throw new Error("Invalid request status.");
+      }
+      if (field === "feasibility" && value && VALID_ASSESSMENTS.feasibility.indexOf(value) === -1) {
+        throw new Error("Invalid feasibility value.");
+      }
+      if (field === "impactLevel" && value && VALID_ASSESSMENTS.impactLevel.indexOf(value) === -1) {
+        throw new Error("Invalid impact level value.");
+      }
+      if (field === "decision" && value && VALID_ASSESSMENTS.decision.indexOf(value) === -1) {
+        throw new Error("Invalid decision value.");
+      }
+      sheet.getRange(rowNumber, allowedFields[field]).setValue(value);
+    }
+  });
+
+  sheet.getRange(rowNumber, 27).setValue(new Date());
+  return {
+    ok: true,
+    request: rowToRequest_(sheet.getRange(rowNumber, 1, 1, HEADERS.length).getValues()[0]),
+  };
 }
 
 function getRequests() {
@@ -212,6 +290,24 @@ function getSheet_() {
 
   ensureHeaders_(sheet);
   return sheet;
+}
+
+function getActiveUserEmail_() {
+  return String(Session.getActiveUser().getEmail() || "").trim().toLowerCase();
+}
+
+function getAdminEmail_() {
+  return String(
+    PropertiesService.getScriptProperties().getProperty(ADMIN_EMAIL_PROPERTY) || "",
+  ).trim().toLowerCase();
+}
+
+function requireAdmin_() {
+  const email = getActiveUserEmail_();
+  const adminEmail = getAdminEmail_();
+  if (!email || !adminEmail || email !== adminEmail) {
+    throw new Error("Only the configured admin can update submissions.");
+  }
 }
 
 function getSpreadsheet_() {

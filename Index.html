@@ -598,6 +598,8 @@
                 }
                 function App() {
                     const [activeTab, setActiveTab] = useState("submit");
+                    const [isAdmin, setIsAdmin] = useState(false);
+                    const [userEmail, setUserEmail] = useState("");
                     const [requests, setRequests] = useState([]);
                     const [loading, setLoading] = useState(true);
                     const [submitting, setSubmitting] = useState(false);
@@ -609,8 +611,21 @@
                     const [selectedRequest, setSelectedRequest] =
                         useState(null);
                     useEffect(() => {
+                        loadAppConfig();
                         loadRequests();
                     }, []);
+                    async function loadAppConfig() {
+                        try {
+                            const response = await runServer("getAppConfig");
+                            setIsAdmin(Boolean(response.isAdmin));
+                            setUserEmail(response.userEmail || "");
+                        } catch (error) {
+                            setMessage({
+                                type: "error",
+                                text: error.message || "Could not identify the signed-in user.",
+                            });
+                        }
+                    }
                     async function loadRequests() {
                         setLoading(true);
                         try {
@@ -807,6 +822,15 @@
                                 },
                                 "Progress Tracker",
                             ),
+                            isAdmin &&
+                                /* @__PURE__ */ React.createElement(
+                                    "button",
+                                    {
+                                        className: `btn tab ${activeTab === "admin" ? "active" : ""}`,
+                                        onClick: () => setActiveTab("admin"),
+                                    },
+                                    "Admin Review",
+                                ),
                         ),
                         message &&
                             /* @__PURE__ */ React.createElement(
@@ -824,18 +848,34 @@
                                   onSubmit: handleSubmit,
                                   submitting,
                               })
-                            : /* @__PURE__ */ React.createElement(Tracker, {
-                                  loading,
-                                  requests: filteredRequests,
-                                  allRequests: requests,
-                                  query,
-                                  setQuery,
-                                  statusFilter,
-                                  setStatusFilter,
-                                  priorityFilter,
-                                  setPriorityFilter,
-                                  onRefresh: loadRequests,
-                                  onSelect: setSelectedRequest,
+                            : activeTab === "admin" && isAdmin
+                              ? /* @__PURE__ */ React.createElement(AdminPanel, {
+                                    requests: filteredRequests,
+                                    allRequests: requests,
+                                    query,
+                                    setQuery,
+                                    statusFilter,
+                                    setStatusFilter,
+                                    priorityFilter,
+                                    setPriorityFilter,
+                                    onRefresh: loadRequests,
+                                    onUpdated: async () => {
+                                        await loadRequests();
+                                    },
+                                    userEmail,
+                                })
+                              : /* @__PURE__ */ React.createElement(Tracker, {
+                                    loading,
+                                    requests: filteredRequests,
+                                    allRequests: requests,
+                                    query,
+                                    setQuery,
+                                    statusFilter,
+                                    setStatusFilter,
+                                    priorityFilter,
+                                    setPriorityFilter,
+                                    onRefresh: loadRequests,
+                                    onSelect: setSelectedRequest,
                               }),
                         selectedRequest &&
                             /* @__PURE__ */ React.createElement(RequestModal, {
@@ -1522,6 +1562,117 @@
                                 className: `progress-step ${index < filled ? "done" : ""} ${isBacklog && index < filled ? "warning" : ""} ${isRejected && index < filled ? "rejected" : ""}`,
                             }),
                         ),
+                    );
+                }
+                function AdminPanel({
+                    requests,
+                    allRequests,
+                    query,
+                    setQuery,
+                    statusFilter,
+                    setStatusFilter,
+                    priorityFilter,
+                    setPriorityFilter,
+                    onRefresh,
+                    onUpdated,
+                    userEmail,
+                }) {
+                    const [selected, setSelected] = useState(null);
+                    return /* @__PURE__ */ React.createElement(
+                        "section",
+                        { className: "panel", "aria-labelledby": "admin-title" },
+                        /* @__PURE__ */ React.createElement(
+                            "div",
+                            { className: "panel-header" },
+                            /* @__PURE__ */ React.createElement(
+                                "div",
+                                null,
+                                /* @__PURE__ */ React.createElement("span", { className: "kicker" }, "Admin only"),
+                                /* @__PURE__ */ React.createElement("h2", { id: "admin-title" }, "Submission review"),
+                                /* @__PURE__ */ React.createElement("p", null, "Signed in as ", userEmail, ". Update the review fields and publish progress for everyone.")
+                            ),
+                            /* @__PURE__ */ React.createElement("button", { className: "btn btn-outline", onClick: onRefresh }, "Refresh")
+                        ),
+                        /* @__PURE__ */ React.createElement(
+                            "div",
+                            { className: "toolbar" },
+                            /* @__PURE__ */ React.createElement(
+                                "div",
+                                { className: "toolbar-controls" },
+                                /* @__PURE__ */ React.createElement("input", { "aria-label": "Search submissions", placeholder: "Search submissions…", value: query, onChange: (event) => setQuery(event.target.value) }),
+                                /* @__PURE__ */ React.createElement("select", { "aria-label": "Filter by status", value: statusFilter, onChange: (event) => setStatusFilter(event.target.value) }, ["All", "Submitted", "Approved", "Rejected", "MVP", "Done", "Backlog"].map((status) => /* @__PURE__ */ React.createElement("option", { key: status }, status))),
+                                /* @__PURE__ */ React.createElement("select", { "aria-label": "Filter by priority", value: priorityFilter, onChange: (event) => setPriorityFilter(event.target.value) }, ["All", "Low", "Medium", "High"].map((priority) => /* @__PURE__ */ React.createElement("option", { key: priority }, priority)))
+                            ),
+                            /* @__PURE__ */ React.createElement("span", { className: "helper" }, "Showing ", requests.length, " of ", allRequests.length, " submissions")
+                        ),
+                        requests.length === 0
+                            ? /* @__PURE__ */ React.createElement("div", { className: "empty-state" }, "No submissions found.")
+                            : /* @__PURE__ */ React.createElement("div", { className: "requests-grid" }, requests.map((request) => /* @__PURE__ */ React.createElement(
+                                "article",
+                                { className: "request-card", key: request.id },
+                                /* @__PURE__ */ React.createElement("div", { className: "request-card-header" },
+                                    /* @__PURE__ */ React.createElement("div", null,
+                                        /* @__PURE__ */ React.createElement("div", { className: "pill-row" }, request.id, /* @__PURE__ */ React.createElement(StatusPill, { status: request.status }), /* @__PURE__ */ React.createElement(PriorityPill, { priority: request.priority })),
+                                        /* @__PURE__ */ React.createElement("h3", null, request.requestTitle),
+                                        /* @__PURE__ */ React.createElement("div", { className: "request-meta" }, request.department, " · ", request.requesterName)
+                                    ),
+                                    /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: () => setSelected(request) }, "Review")
+                                ),
+                                /* @__PURE__ */ React.createElement("p", null, truncate(request.problemStatement, 180))
+                            ))) ,
+                        selected && /* @__PURE__ */ React.createElement(AdminEditor, {
+                            request: selected,
+                            onClose: () => setSelected(null),
+                            onSaved: async () => {
+                                setSelected(null);
+                                await onUpdated();
+                            },
+                        })
+                    );
+                }
+                function AdminEditor({ request, onClose, onSaved }) {
+                    const [values, setValues] = useState({
+                        status: request.status || "Submitted",
+                        reviewedBy: request.reviewedBy || "",
+                        feasibility: request.feasibility || "",
+                        impactLevel: request.impactLevel || "",
+                        decision: request.decision || "",
+                        madLabsNotes: request.madLabsNotes || "",
+                    });
+                    const [saving, setSaving] = useState(false);
+                    const [error, setError] = useState("");
+                    function update(name, value) {
+                        setValues((current) => ({ ...current, [name]: value }));
+                    }
+                    async function save() {
+                        setSaving(true);
+                        setError("");
+                        try {
+                            await runServer("updateRequest", request.id, values);
+                            await onSaved();
+                        } catch (err) {
+                            setError(err.message || "Could not save review.");
+                        } finally {
+                            setSaving(false);
+                        }
+                    }
+                    return /* @__PURE__ */ React.createElement("div", { className: "modal-backdrop", role: "presentation", onMouseDown: (event) => event.target === event.currentTarget && onClose() },
+                        /* @__PURE__ */ React.createElement("section", { className: "modal-card", role: "dialog", "aria-modal": "true", "aria-labelledby": "admin-editor-title" },
+                            /* @__PURE__ */ React.createElement("div", { className: "panel-header" },
+                                /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", { className: "kicker" }, request.id), /* @__PURE__ */ React.createElement("h2", { id: "admin-editor-title" }, request.requestTitle)),
+                                /* @__PURE__ */ React.createElement("button", { className: "btn btn-outline", onClick: onClose }, "Close")
+                            ),
+                            /* @__PURE__ */ React.createElement("div", { className: "form-grid" },
+                                /* @__PURE__ */ React.createElement(Select, { label: "Status", name: "status", value: values.status, onChange: update, options: ["Submitted", "Approved", "Rejected", "MVP", "Done", "Backlog"] }),
+                                /* @__PURE__ */ React.createElement(Input, { label: "Reviewed by", name: "reviewedBy", value: values.reviewedBy, onChange: update }),
+                                /* @__PURE__ */ React.createElement(Select, { label: "Feasibility", name: "feasibility", value: values.feasibility, onChange: update, options: ["", "Easy", "Medium", "Complex"] }),
+                                /* @__PURE__ */ React.createElement(Select, { label: "Impact level", name: "impactLevel", value: values.impactLevel, onChange: update, options: ["", "Low", "Medium", "High"] }),
+                                /* @__PURE__ */ React.createElement(Select, { label: "Decision", name: "decision", value: values.decision, onChange: update, options: ["", "Approved", "Backlog", "Rejected"] }),
+                                /* @__PURE__ */ React.createElement(Textarea, { className: "full", label: "MAD Labs notes", name: "madLabsNotes", value: values.madLabsNotes, onChange: update })
+                            ),
+                            error && /* @__PURE__ */ React.createElement("div", { className: "alert error" }, error),
+                            /* @__PURE__ */ React.createElement("div", { className: "form-actions" }, /* @__PURE__ */ React.createElement("button", { className: "btn btn-primary", onClick: save, disabled: saving }, saving ? "Saving…" : "Save review"))
+                        )
                     );
                 }
                 function RequestModal({ request, onClose }) {
